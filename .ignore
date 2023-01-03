@@ -1,0 +1,8 @@
+tags
+
+node_modules
+
+screens
+test-data
+
+*.priv-i18n
