@@ -4,7 +4,6 @@ set nocompatible                    " use Vim improvements
 
 " Colorschemes
 packadd! gruvbox
-packadd! seoul256
 
 " Search
 packadd! ack
@@ -21,7 +20,6 @@ packadd! bufexplorer
 
 " Languages tools
 packadd! ale
-packadd! gutentags
 
 " Editing enhancements
 packadd! abolish
@@ -44,6 +42,7 @@ packadd! undotree
 packadd! lightline
 packadd! lightline-ale
 packadd! highlightedyank
+packadd! vim-css-color
 
 " Filetype plugins
 packadd! vim-jsx-javascript
@@ -154,7 +153,7 @@ set wildmode=list:longest           " list all matches and complete till longest
 set wildignore=                     " a list of patterns to be ignored when expanding wildcards:
 set wildignore+=.hg,.git,.svn       "   ignore version control directories
 set wildignore+=.DS_Store           "   ignore macOS 'Desktop Services Store'
-set wildcharm=<C-O>                 " ?
+set wildcharm=<C-Z>                 " ?
 
 set completeopt=                    " a list of options for Insert mode completion:
 set completeopt+=menuone            "   use a popup menu also when there is only one match
@@ -247,8 +246,6 @@ function! PackInit() abort
 
     " Colorschemes
     call minpac#add('morhetz/gruvbox', { 'type': 'opt', 'name': 'gruvbox' })
-    call minpac#add('junegunn/seoul256.vim',
-                \ { 'type': 'opt', 'name': 'seoul256' })
 
     " Search
     call minpac#add('mileszs/ack.vim', { 'type': 'opt', 'name': 'ack' })
@@ -268,8 +265,6 @@ function! PackInit() abort
 
     " Language tools
     call minpac#add('dense-analysis/ale', { 'type': 'opt', 'name': 'ale' })
-    call minpac#add('ludovicchabant/vim-gutentags',
-                \ { 'type': 'opt', 'name': 'gutentags' })
 
     " Editing enhancements
     call minpac#add('tpope/vim-abolish', { 'type': 'opt', 'name': 'abolish' })
@@ -303,36 +298,26 @@ function! PackInit() abort
                 \ { 'type': 'opt', 'name': 'lightline-ale' })
     call minpac#add('machakann/vim-highlightedyank',
                 \ { 'type': 'opt', 'name': 'highlightedyank' })
+    call minpac#add('ap/vim-css-color', { 'type': 'opt', 'name': 'vim-css-color' })
 
     " Filetype plugins
     call minpac#add('MaxMEllon/vim-jsx-pretty', { 'type': 'opt', 'name': 'vim-jsx-javascript' })
+
 endfunction
 
 command! PackClean  source $MYVIMRC | call PackInit() | call minpac#clean()
 command! PackUpdate source $MYVIMRC | call PackInit() | call minpac#update()
 command! PackStatus source $MYVIMRC | call PackInit() | call minpac#status()
 
-" Options for 'gruvbox' ------------------------------------------------------
-let g:gruvbox_number_column = 'bg1'
-let g:gruvbox_guisp_fallback = 'bg'
-let g:gruvbox_invert_selection = 0
-
-" Options for 'seoul256' -----------------------------------------------------
-let g:seoul256_background = 235
-let g:seoul256_light_background = 254
-
 " Options for 'ack' ----------------------------------------------------------
-let g:ackhighlight = 0
+let g:ackhighlight=0
 
 " Options for 'fzf.vim' ------------------------------------------------------
-let g:fzf_buffers_jump = 1
-let g:fzf_command_prefix = 'Fzf'
+let g:fzf_buffers_jump=1
+let g:fzf_command_prefix='Fzf'
 
-nnoremap <C-G>a     :FzfAg <C-R><C-W><CR>
-nnoremap <C-G><C-A> :FzfAg <C-R><C-W><CR>
-
-nnoremap <C-G>t     :FzfTag <C-R><C-W><CR>
-nnoremap <C-G><C-T> :FzfTag <C-R><C-W><CR>
+nnoremap <C-G>t     :FzfTag! <C-R><C-W><CR>
+nnoremap <C-G><C-T> :FzfTag! <C-R><C-W><CR>
 
 nnoremap <C-P>      :FzfFiles!<CR>
 nnoremap <C-G>f     :FzfFiles!<CR>
@@ -376,11 +361,6 @@ nmap [E <Plug>(ale_first)
 nmap ]e <Plug>(ale_next)
 nmap ]E <Plug>(ale_last)
 
-" Options for gutentags ------------------------------------------------------
-if executable('exctags')
-    let g:gutentags_ctags_executable = 'exctags'
-endif
-
 " Options for jsbeautify -----------------------------------------------------
 function! s:FormatJS()
     return call('Beautifier', extend(['js'], [v:lnum, v:lnum + v:count - 1]))
@@ -416,9 +396,9 @@ let g:splitjoin_join_mapping  = 'gS'
 " Options for 'tagbar' -------------------------------------------------------
 
 " Options for undotree -------------------------------------------------------
-let g:undotree_SplitWidth = 30
-let g:undotree_WindowLayout = 4
-let g:undotree_SetFocusWhenToggle = 1
+let g:undotree_SplitWidth=60
+let g:undotree_WindowLayout=4
+let g:undotree_SetFocusWhenToggle=1
 
 " Options for lightline ------------------------------------------------------
 let g:lightline = {
@@ -466,12 +446,12 @@ highlight! link ShowMarksHLo SpellRare
 
 " ============================================================================
 if executable('rg')
-    let g:ackprg = "rg --no-require-git --vimgrep"
-    let g:gutentags_file_list_command = 'ag -g ""'
-    let $FZF_DEFAULT_COMMAND = 'rg --no-require-git --files'
+    let g:ackprg = "rg --vimgrep"
+    let g:gutentags_file_list_command = 'rg --files'
+    let $FZF_DEFAULT_COMMAND = 'rg --files'
 elseif executable('ag')
     let g:ackprg = "ag --vimgrep"
-    let g:gutentags_file_list_command = 'rg --files'
+    let g:gutentags_file_list_command = 'ag -g ""'
     let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 endif
 
