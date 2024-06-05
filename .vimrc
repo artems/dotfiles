@@ -1,5 +1,6 @@
 set nocompatible                    " use Vim improvements
 
+" ============================================================================
 " ! Package setup
 
 " Colorschemes
@@ -8,44 +9,43 @@ packadd! gruvbox
 " Search
 packadd! ack
 packadd! fzf
-packadd! fzf.vim
+packadd! fzf_vim
 
-" VCS
-packadd! fugitive
-packadd! gitgutter
+" Languages tools
+packadd! ale
 
 " Files/Buffers
 packadd! vinegar
 packadd! bufexplorer
 
-" Languages tools
-packadd! ale
-
 " Editing enhancements
 packadd! abolish
 packadd! commentary
 packadd! editorconfig
-packadd! eunuch
-packadd! exchange
 packadd! jsbeautify
 packadd! matchit
 packadd! repeat
-packadd! surround
 packadd! splitjoin
-packadd! tabular
+packadd! surround
 packadd! unimpaired
+" packadd! exchange
 
 " Editing UI/UX
-packadd! tagbar
-packadd! smoothie
-packadd! undotree
-packadd! lightline
-packadd! lightline-ale
+packadd! csscolor
 packadd! highlightedyank
-packadd! vim-css-color
+packadd! lightline
+packadd! lightline_ale
+packadd! smoothie
+packadd! traces
+" packadd! tagbar
+" packadd! undotree
+
+" VCS
+packadd! fugitive
+packadd! gitgutter
 
 " Filetype plugins
-packadd! vim-jsx-javascript
+packadd! javascript_jsx
 
 " ============================================================================
 " ! General preferences
@@ -80,7 +80,7 @@ set listchars+=extends:❯            "   character to show in the last column
 set listchars+=precedes:❮           "   character to show in the first visible column of the physical line
 set listchars+=nbsp:×               "   character to show for a non-breakable space
 
-set fillchars+=vert:\|               " set "\|" as character to fill vertical separators
+set fillchars+=vert:\|              " set "\|" as character to fill vertical separators
 
 set display=
 set display+=uhex                   " show unprintable characters hexadecimal as <xx>
@@ -89,7 +89,10 @@ set display+=truncate               " show '@@@' in the last screen line if rest
 " Formatting
 set textwidth=78                    " maximum width of text when formatting
 set formatoptions=                  " disable wrapping text in Insert mode
-set formatoptions+=n                "   n - recognize numbered list
+set formatoptions+=c                "   c - auto-wrap comments using textwidth
+set formatoptions+=r                "   r - automaticly insert the current comment leader after hitting <Enter>
+set formatoptions+=o                "   o - automaticly insert the current comment leader after hitting 'o'
+set formatoptions+=l                "   l - long lines are not broken in insert mode
 set formatoptions+=q                "   q - allow formatting of comments with 'gq'
 set formatoptions+=j                "   j - remove a comment leader when joining lines
 
@@ -98,14 +101,14 @@ set hlsearch                        " highlight all found matches
 set incsearch                       " search the pattern while typing
 set nogdefault                      " turn off global substitution by default
 set noignorecase                    " turn off ignoring case in search patterns by default
-set nosmartcase                     " always ignoring case in search patterns
+set nosmartcase                     " turn off ignoring case in search patterns
 nohlsearch                          " turn off current highlight when reloading '.vimrc'
 
 " Appearance
 set title                           " set the terminal title
+set number                          " show the line number in front of each line
 set showcmd                         " show (partial) command in the last line of the screen
 set showmode                        " show the current mode on the last line
-set number                          " show the line number in front of each line
 set mousehide                       " hide the mouse pointer when typing a text
 set visualbell                      " use a visual bell instead of beeping
 set noshowmatch                     " don't jump to the matching bracket in insert mode
@@ -117,16 +120,16 @@ set laststatus=2                    " always display a statusline
 
 " Colors
 set background=dark
-let g:gruvbox_number_column = 'bg1'
-let g:gruvbox_guisp_fallback = 'bg'
-let g:gruvbox_invert_selection = 0
+let g:gruvbox_number_column='bg1'
+let g:gruvbox_guisp_fallback='bg'
+let g:gruvbox_invert_selection=0
 colorscheme gruvbox
 
 " use 24-bit color whenever possible
 if has('termguicolors') && $COLORTERM ==# 'truecolor'
     if (&term =~# '^tmux')
-        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+        let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+        let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
     endif
 
     set termguicolors               " use gui colors in the terminal
@@ -187,24 +190,12 @@ set synmaxcol=2000                  " maximal column in which to search for synt
 set updatetime=200                  " emit 'CursorHold' event after 200ms
 
 " ============================================================================
-" ! Menu setup
-
-" Encodings
-menu encoding.utf8   :edit ++enc=utf8<CR>
-menu encoding.cp866  :edit ++enc=cp866<CR>
-menu encoding.cp1251 :edit ++enc=cp1251<CR>
-menu encoding.koi8-r :edit ++enc=koi8-r<CR>
-
-" ============================================================================
 " ! Key mappings
 nnoremap Y      y$
 nnoremap Q      <Nop>
 inoremap jk     <Esc>
 inoremap <C-U>  <C-G>u<C-U>
 inoremap <C-W>  <C-G>u<C-W>
-
-" Make CTRL-G a new <leader> key
-nnoremap <C-G><C-G> <C-G>
 
 " Use <C-L> to clear the highlighting of hlsearch.
 nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
@@ -215,26 +206,19 @@ nnoremap <C-k>  :move .-2<CR>==
 xnoremap <C-j>  :move '>+1<CR>gv=gv
 xnoremap <C-k>  :move '<-2<CR>gv=gv
 
-" repeat last change with confirm from the current line to end of the buffer
-nnoremap <C-S>  :.,$S/<C-R>-/<C-R>./gc<CR>
-
 " reload '.vimrc'
 nnoremap <leader>re :source $MYVIMRC<CR>
 
-" show encoding menu
-nnoremap <leader>en :emenu encoding.<C-O>
-
 " ============================================================================
 " ! FileType autocommands
-augroup vimrc_ft_vim_setup
+augroup vimrc_filetype_vim_setup
     autocmd!
     autocmd FileType vim set foldenable foldmethod=marker
 augroup end
 
 " ============================================================================
-" Options for 'netrw' -------------------------------------------------------
-let g:netrw_liststyle=0
-let g:netrw_fastbrowse=0
+" Options for 'netrw' --------------------------------------------------------
+let g:netrw_altfile=1
 
 " Options for 'minpac' -------------------------------------------------------
 function! PackInit() abort
@@ -245,26 +229,20 @@ function! PackInit() abort
     call minpac#add('k-takata/minpac', { 'type': 'opt', 'name': 'minpac' })
 
     " Colorschemes
-    call minpac#add('morhetz/gruvbox', { 'type': 'opt', 'name': 'gruvbox' })
+    call minpac#add('lifepillar/vim-gruvbox8', { 'type': 'opt', 'name': 'gruvbox' })
 
     " Search
     call minpac#add('mileszs/ack.vim', { 'type': 'opt', 'name': 'ack' })
     call minpac#add('junegunn/fzf', { 'type': 'opt', 'name': 'fzf' })
-    call minpac#add('junegunn/fzf.vim', { 'type': 'opt', 'name': 'fzf.vim' })
+    call minpac#add('junegunn/fzf.vim', { 'type': 'opt', 'name': 'fzf_vim' })
 
-    " VCS
-    call minpac#add('tpope/vim-fugitive',
-                \ { 'type': 'opt', 'name': 'fugitive' })
-    call minpac#add('airblade/vim-gitgutter',
-                \ { 'type': 'opt', 'name': 'gitgutter' })
+    " Language tools
+    call minpac#add('dense-analysis/ale', { 'type': 'opt', 'name': 'ale' })
 
     " Files/Buffers
     call minpac#add('tpope/vim-vinegar', { 'type': 'opt', 'name': 'vinegar' })
     call minpac#add('jlanzarotta/bufexplorer',
                 \ { 'type': 'opt', 'name': 'bufexplorer' })
-
-    " Language tools
-    call minpac#add('dense-analysis/ale', { 'type': 'opt', 'name': 'ale' })
 
     " Editing enhancements
     call minpac#add('tpope/vim-abolish', { 'type': 'opt', 'name': 'abolish' })
@@ -272,7 +250,6 @@ function! PackInit() abort
                 \ { 'type': 'opt', 'name': 'commentary' })
     call minpac#add('editorconfig/editorconfig-vim',
                 \ { 'type': 'opt', 'name': 'editorconfig' })
-    call minpac#add('tpope/vim-eunuch', { 'type': 'opt', 'name': 'eunuch' })
     call minpac#add('tommcdo/vim-exchange',
                 \ { 'type': 'opt', 'name': 'exchange' })
     call minpac#add('maksimr/vim-jsbeautify',
@@ -282,27 +259,34 @@ function! PackInit() abort
                 \ { 'type': 'opt', 'name': 'splitjoin' })
     call minpac#add('tpope/vim-surround',
                 \ { 'type': 'opt', 'name': 'surround' })
-    call minpac#add('godlygeek/tabular', { 'type': 'opt', 'name': 'tabular' })
     call minpac#add('tpope/vim-unimpaired',
                 \ { 'type': 'opt', 'name': 'unimpaired' })
 
     " UI/UX
-    call minpac#add('preservim/tagbar',
-                \ { 'type': 'opt', 'name': 'tagbar' })
-    call minpac#add('psliwka/vim-smoothie',
-                \ { 'type': 'opt', 'name': 'smoothie' })
-    call minpac#add('mbbill/undotree', { 'type': 'opt', 'name': 'undotree' })
+    call minpac#add('ap/vim-css-color',
+                \ { 'type': 'opt', 'name': 'csscolor' })
+    call minpac#add('machakann/vim-highlightedyank',
+                \ { 'type': 'opt', 'name': 'highlightedyank' })
     call minpac#add('itchyny/lightline.vim',
                 \ { 'type': 'opt', 'name': 'lightline' })
     call minpac#add('maximbaz/lightline-ale',
-                \ { 'type': 'opt', 'name': 'lightline-ale' })
-    call minpac#add('machakann/vim-highlightedyank',
-                \ { 'type': 'opt', 'name': 'highlightedyank' })
-    call minpac#add('ap/vim-css-color', { 'type': 'opt', 'name': 'vim-css-color' })
+                \ { 'type': 'opt', 'name': 'lightline_ale' })
+    call minpac#add('psliwka/vim-smoothie',
+                \ { 'type': 'opt', 'name': 'smoothie' })
+    call minpac#add('markonm/traces.vim', { 'type': 'opt', 'name': 'traces' })
+    call minpac#add('preservim/tagbar',
+                \ { 'type': 'opt', 'name': 'tagbar' })
+    call minpac#add('mbbill/undotree', { 'type': 'opt', 'name': 'undotree' })
+
+    " VCS
+    call minpac#add('tpope/vim-fugitive',
+                \ { 'type': 'opt', 'name': 'fugitive' })
+    call minpac#add('airblade/vim-gitgutter',
+                \ { 'type': 'opt', 'name': 'gitgutter' })
 
     " Filetype plugins
-    call minpac#add('MaxMEllon/vim-jsx-pretty', { 'type': 'opt', 'name': 'vim-jsx-javascript' })
-
+    call minpac#add('MaxMEllon/vim-jsx-pretty',
+                \ { 'type': 'opt', 'name': 'javascript_jsx' })
 endfunction
 
 command! PackClean  source $MYVIMRC | call PackInit() | call minpac#clean()
@@ -310,28 +294,16 @@ command! PackUpdate source $MYVIMRC | call PackInit() | call minpac#update()
 command! PackStatus source $MYVIMRC | call PackInit() | call minpac#status()
 
 " Options for 'ack' ----------------------------------------------------------
-let g:ackhighlight=0
+let g:ackhighlight=1                " highlight the searched term
 
 " Options for 'fzf.vim' ------------------------------------------------------
-let g:fzf_buffers_jump=1
+let g:fzf_buffers_jump=1            " jump to the existing window if possible
 let g:fzf_command_prefix='Fzf'
 
-nnoremap <C-G>t     :FzfTag! <C-R><C-W><CR>
-nnoremap <C-G><C-T> :FzfTag! <C-R><C-W><CR>
-
 nnoremap <C-P>      :FzfFiles!<CR>
-nnoremap <C-G>f     :FzfFiles!<CR>
-nnoremap <C-G><C-F> :FzfFiles!<CR>
-
 nnoremap <C-N>      :FzfHistory!<CR>
-nnoremap <C-G>h     :FzfHistory!<CR>
-nnoremap <C-G><C-H> :FzfHistory!<CR>
 
 " Options for 'bufexplorer' --------------------------------------------------
-nnoremap <Space>    :BufExplorer<CR>
-nnoremap <C-G>b     :BufExplorer<CR>
-nnoremap <C-G><C-B> :BufExplorer<CR>
-
 let g:bufExplorerSortBy='mru'
 let g:bufExplorerFindActive=1
 let g:bufExplorerShowTabBuffer=0
@@ -340,14 +312,60 @@ let g:bufExplorerShowRelativePath=1
 let g:bufExplorerSplitOutPathName=0
 let g:bufExplorerDisableDefaultKeyMapping=1
 
+nnoremap <Space>    :BufExplorer<CR>
+
+augroup vimrc_plugin_bufexplorer_setup
+    autocmd!
+    autocmd FileType bufexplorer nmap <silent> <buffer> ? <F1>
+    autocmd FileType bufexplorer nmap <silent> <buffer> <Space> q
+augroup end
+
 " Options for ale ------------------------------------------------------------
 let g:ale_set_loclist=0
 let g:ale_echo_cursor=0
 let g:ale_hover_cursor=0
 let g:ale_cursor_detail=0
+let g:ale_virtualtext_cursor='disable'
 
 let g:ale_floating_preview=1
-let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
+let g:ale_floating_window_border=['│', '─', '╭', '╮', '╯', '╰', '│', '─']
+
+let g:ale_completion_symbols = {
+    \ 'text': '',
+    \ 'method': '',
+    \ 'function': '',
+    \ 'constructor': '',
+    \ 'field': '',
+    \ 'variable': '',
+    \ 'class': '',
+    \ 'interface': '',
+    \ 'module': '',
+    \ 'property': '',
+    \ 'unit': 'unit',
+    \ 'value': 'val',
+    \ 'enum': '',
+    \ 'keyword': 'keyword',
+    \ 'snippet': '',
+    \ 'color': 'color',
+    \ 'file': '',
+    \ 'reference': 'ref',
+    \ 'folder': '',
+    \ 'enum member': '',
+    \ 'constant': '',
+    \ 'struct': '',
+    \ 'event': 'event',
+    \ 'operator': '',
+    \ 'type_parameter': 'type param',
+    \ '<default>': 'v'
+    \ }
+
+let g:ale_floating_preview_popup_opts = {
+    \ 'close': 'none'
+    \ }
+
+let g:ale_linters_ignore = {
+    \   'html': ['eslint'],
+    \}
 
 set omnifunc=ale#completion#OmniFunc
 
@@ -355,6 +373,7 @@ nmap gh <Plug>(ale_hover)
 nmap gH <Plug>(ale_detail)
 nmap gR <Plug>(ale_find_references)
 nmap gD <Plug>(ale_go_to_definition)
+nmap gY <Plug>(ale_go_to_type_definition)
 
 nmap [e <Plug>(ale_previous)
 nmap [E <Plug>(ale_first)
@@ -363,22 +382,42 @@ nmap ]E <Plug>(ale_last)
 
 " Options for jsbeautify -----------------------------------------------------
 function! s:FormatJS()
-    return call('Beautifier', extend(['js'], [v:lnum, v:lnum + v:count - 1]))
+    if mode() == 'n'
+        call Beautifier('js', v:lnum, v:lnum + v:count - 1)
+        return 0
+    endif
+    return 1
 endfun
 function! s:FormatJSX()
-    return call('Beautifier', extend(['jsx'], [v:lnum, v:lnum + v:count - 1]))
+    if mode() == 'n'
+        call Beautifier('jsx', v:lnum, v:lnum + v:count - 1)
+        return 0
+    endif
+    return 1
 endfun
 function! s:FormatCSS()
-    return call('Beautifier', extend(['css'], [v:lnum, v:lnum + v:count - 1]))
+    if mode() == 'n'
+        call Beautifier('css', v:lnum, v:lnum + v:count - 1)
+        return 0
+    endif
+    return 1
 endfun
 function! s:FormatHTML()
-    return call('Beautifier', extend(['html'], [v:lnum, v:lnum + v:count - 1]))
+    if mode() == 'n'
+        call Beautifier('html', v:lnum, v:lnum + v:count - 1)
+        return 0
+    endif
+    return 1
 endfun
 function! s:FormatJSON()
-    return call('Beautifier', extend(['json'], [v:lnum, v:lnum + v:count - 1]))
+    if mode() == 'n'
+        call Beautifier('json', v:lnum, v:lnum + v:count - 1)
+        return 0
+    endif
+    return 1
 endfun
 
-augroup vimrc_pg_jsbeautify_setup
+augroup vimrc_plugin_jsbeautify_setup
     autocmd!
     autocmd FileType javascript         setlocal formatexpr=s:FormatJS()
     autocmd FileType typescript         setlocal formatexpr=s:FormatJS()
@@ -390,45 +429,46 @@ augroup vimrc_pg_jsbeautify_setup
 augroup end
 
 " Options for 'splitjoin' ----------------------------------------------------
-let g:splitjoin_split_mapping = 'gs'
-let g:splitjoin_join_mapping  = 'gS'
-
-" Options for 'tagbar' -------------------------------------------------------
-
-" Options for undotree -------------------------------------------------------
-let g:undotree_SplitWidth=60
-let g:undotree_WindowLayout=4
-let g:undotree_SetFocusWhenToggle=1
+let g:splitjoin_join_mapping='gS'
+let g:splitjoin_split_mapping='gs'
 
 " Options for lightline ------------------------------------------------------
 let g:lightline = {
-            \ 'colorscheme': g:colors_name,
-            \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
-            \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" },
-            \ }
+    \ 'colorscheme': g:colors_name,
+    \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
+    \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" },
+    \ }
 
 let g:lightline.component_expand = {
-            \  'linter_checking':  'lightline#ale#checking',
-            \  'linter_infos':     'lightline#ale#infos',
-            \  'linter_warnings':  'lightline#ale#warnings',
-            \  'linter_errors':    'lightline#ale#errors',
-            \  'linter_ok':        'lightline#ale#ok',
-            \ }
+    \  'linter_checking':  'lightline#ale#checking',
+    \  'linter_infos':     'lightline#ale#infos',
+    \  'linter_warnings':  'lightline#ale#warnings',
+    \  'linter_errors':    'lightline#ale#errors',
+    \  'linter_ok':        'lightline#ale#ok',
+    \ }
 
 let g:lightline.component_type = {
-            \  'linter_checking':  'right',
-            \  'linter_infos':     'right',
-            \  'linter_warnings':  'warning',
-            \  'linter_errors':    'error',
-            \  'linter_ok':        'right',
-            \ }
+    \  'linter_checking':  'right',
+    \  'linter_infos':     'right',
+    \  'linter_warnings':  'warning',
+    \  'linter_errors':    'error',
+    \  'linter_ok':        'right',
+    \ }
 
 let g:lightline.active = {
-            \ 'right': [ [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos', 'linter_ok' ],
-            \            [ 'lineinfo' ],
-            \            [ 'percent' ],
-            \            [ 'fileformat', 'fileencoding', 'filetype'] ]
-            \ }
+    \ 'right': [
+    \   [
+    \       'linter_checking',
+    \       'linter_errors',
+    \       'linter_warnings',
+    \       'linter_infos',
+    \       'linter_ok'
+    \   ],
+    \   ['lineinfo'],
+    \   ['percent'],
+    \   ['fileformat', 'fileencoding', 'filetype']
+    \  ]
+    \ }
 
 let g:lightline#ale#indicator_checking = "\uf110 "
 let g:lightline#ale#indicator_infos    = "\uf129 "
@@ -438,20 +478,12 @@ let g:lightline#ale#indicator_errors   = "\uf05e "
 " Options for 'highlightedyank' ----------------------------------------------
 let g:highlightedyank_highlight_duration=200
 
-" Options for 'ShowMarks' ----------------------------------------------------
-let g:showmarks_enable=0
-highlight! link ShowMarksHLl SpellBad
-highlight! link ShowMarksHLu SpellCap
-highlight! link ShowMarksHLo SpellRare
-
 " ============================================================================
 if executable('rg')
     let g:ackprg = "rg --vimgrep"
-    let g:gutentags_file_list_command = 'rg --files'
     let $FZF_DEFAULT_COMMAND = 'rg --files'
 elseif executable('ag')
     let g:ackprg = "ag --vimgrep"
-    let g:gutentags_file_list_command = 'ag -g ""'
     let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 endif
 
