@@ -5,6 +5,4 @@ export EDITOR=vim
 
 alias py3='python3'
 
-alias ssh-dev='ssh xxxxxx-dev tmux attach -t web4 -d'
-
-
+alias ssh-dev='ssh dev tmux attach -t remote -d'

@@ -5,5 +5,8 @@
 [branch "trunk"]
     allowCommit = false
 
-[pre-commit-hook "frontend/projects/web4"]
+[pre-commit-hook "search-interfaces/oceania/projects/web4"]
     arctic-husky-pre-commit = .arc/user_hooks/hooks/pre-commit
+
+[commit-msg-hook "search-interfaces/oceania/projects/web4"]
+    arctic-husky-commit-msg = .arc/user_hooks/hooks/commit-msg
