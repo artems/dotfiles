@@ -28,7 +28,6 @@ packadd! repeat
 packadd! splitjoin
 packadd! surround
 packadd! unimpaired
-" packadd! exchange
 
 " Editing UI/UX
 packadd! csscolor
@@ -37,15 +36,13 @@ packadd! lightline
 packadd! lightline_ale
 packadd! smoothie
 packadd! traces
-" packadd! tagbar
-" packadd! undotree
 
 " VCS
 packadd! fugitive
 packadd! gitgutter
 
 " Filetype plugins
-packadd! javascript_jsx
+packadd! javascript_new_jsx
 
 " ============================================================================
 " ! General preferences
@@ -87,7 +84,7 @@ set display+=uhex                   " show unprintable characters hexadecimal as
 set display+=truncate               " show '@@@' in the last screen line if rest of the line is not displayed
 
 " Formatting
-set textwidth=78                    " maximum width of text when formatting
+set textwidth=80                    " maximum width of text when formatting
 set formatoptions=                  " disable wrapping text in Insert mode
 set formatoptions+=c                "   c - auto-wrap comments using textwidth
 set formatoptions+=r                "   r - automaticly insert the current comment leader after hitting <Enter>
@@ -250,8 +247,6 @@ function! PackInit() abort
                 \ { 'type': 'opt', 'name': 'commentary' })
     call minpac#add('editorconfig/editorconfig-vim',
                 \ { 'type': 'opt', 'name': 'editorconfig' })
-    call minpac#add('tommcdo/vim-exchange',
-                \ { 'type': 'opt', 'name': 'exchange' })
     call minpac#add('maksimr/vim-jsbeautify',
                 \ { 'type': 'opt', 'name': 'jsbeautify' })
     call minpac#add('tpope/vim-repeat', { 'type': 'opt', 'name': 'repeat' })
@@ -274,9 +269,6 @@ function! PackInit() abort
     call minpac#add('psliwka/vim-smoothie',
                 \ { 'type': 'opt', 'name': 'smoothie' })
     call minpac#add('markonm/traces.vim', { 'type': 'opt', 'name': 'traces' })
-    call minpac#add('preservim/tagbar',
-                \ { 'type': 'opt', 'name': 'tagbar' })
-    call minpac#add('mbbill/undotree', { 'type': 'opt', 'name': 'undotree' })
 
     " VCS
     call minpac#add('tpope/vim-fugitive',
@@ -285,8 +277,8 @@ function! PackInit() abort
                 \ { 'type': 'opt', 'name': 'gitgutter' })
 
     " Filetype plugins
-    call minpac#add('MaxMEllon/vim-jsx-pretty',
-                \ { 'type': 'opt', 'name': 'javascript_jsx' })
+    call minpac#add('HerringtonDarkholme/yats.vim',
+                \ { 'type': 'opt', 'name': 'javascript_new_jsx' })
 endfunction
 
 command! PackClean  source $MYVIMRC | call PackInit() | call minpac#clean()
