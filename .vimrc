@@ -91,6 +91,7 @@ set formatoptions+=r                "   r - automaticly insert the current comme
 set formatoptions+=o                "   o - automaticly insert the current comment leader after hitting 'o'
 set formatoptions+=l                "   l - long lines are not broken in insert mode
 set formatoptions+=q                "   q - allow formatting of comments with 'gq'
+set formatoptions+=n                "   n - recognize numbered list
 set formatoptions+=j                "   j - remove a comment leader when joining lines
 
 " Search
@@ -354,10 +355,6 @@ let g:ale_completion_symbols = {
 let g:ale_floating_preview_popup_opts = {
     \ 'close': 'none'
     \ }
-
-let g:ale_linters_ignore = {
-    \   'html': ['eslint'],
-    \}
 
 set omnifunc=ale#completion#OmniFunc
 
