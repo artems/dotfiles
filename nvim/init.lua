@@ -78,7 +78,6 @@ vim.opt.sidescrolloff = 5                       -- Minimal number of columns to 
 -- Diff options
 vim.opt.diffopt = {}                            -- Settings for diff mode:
 vim.opt.diffopt:append("filler")                --   Show filler lines
-vim.opt.diffopt:append("iblank")                --   Ignore changes where lines are all blank
 vim.opt.diffopt:append("iwhite")                --   Ignore changes in the amount of white space
 vim.opt.diffopt:append("vertical")              --   Start diff mode with vertical splits
 vim.opt.diffopt:append("closeoff")              --   Execute ':diffoff' if there is only one window remaining with 'diff' set
