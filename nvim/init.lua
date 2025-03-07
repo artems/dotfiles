@@ -14,8 +14,8 @@ vim.opt.softtabstop = 4                         -- Number of spaces to use for <
 
 vim.opt.wrap = true                             -- Wrap long lines
 vim.opt.linebreak = true                        -- Don't break words
-vim.opt.showbreak = "↪ "                        -- Show "↪ " at the beginning of wrapped lines
 vim.opt.breakindent = true                      -- Visually indent each wrapped line with the same amount of space as the beginning of that line
+vim.opt.showbreak = "↪ "                        -- Show "↪ " at the beginning of wrapped lines
 
 vim.opt.list = true                             -- Display unprintable characters
 vim.opt.listchars = {}                          -- Strings to use in "list" mode:
@@ -48,7 +48,7 @@ vim.opt.incsearch = true                        -- Search the pattern while typi
 vim.opt.gdefault = false                        -- Turn off global substitution by default
 vim.opt.ignorecase = false                      -- Turn off ignoring case in search patterns by default
 vim.opt.smartcase = false                       -- Always turn off ignoring case in search patterns
-vim.cmd([[nohlsearch]])                         -- Turn off current highlight when reloading '.vimrc'
+vim.cmd("nohlsearch")                           -- Turn off current highlight when reloading '.vimrc'
 
 -- Appearance
 vim.opt.title = true                            -- Set the terminal title
@@ -66,7 +66,7 @@ vim.opt.showtabline = 1                         -- Show tabs only if there are a
 
 -- Colors
 vim.opt.background = "dark"                     -- Set background to dark
-vim.cmd([[colorscheme retrobox]])               -- Apply the retrobox colorscheme
+vim.cmd("colorscheme retrobox")                 -- Apply the retrobox colorscheme
 
 -- Windows
 vim.opt.splitright = true                       -- Put the new window right of the current one
@@ -161,8 +161,6 @@ vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
 vim.g.bufExplorerSplitOutPathName = false         -- Do not split the filename and path
 vim.g.bufExplorerDisableDefaultKeyMapping = true  -- Disable default key mappings
 
-vim.keymap.set("n", "<Space>", "<CMD>BufExplorer<CR>", { noremap = true })
-
 vim.api.nvim_create_augroup("vimrc_plugin_bufexplorer_setup", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   group = "vimrc_plugin_bufexplorer_setup",
@@ -195,13 +193,12 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not vim.loop.fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
   local out = vim.fn.system({
     "git",
     "clone",
     "--filter=blob:none",
     "--branch=stable",
-    lazyrepo,
+    "https://github.com/folke/lazy.nvim.git",
     lazypath,
   })
 
@@ -218,99 +215,56 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
--- ! Setup lazy.nvim
+-- ! Setup lazy.nvim ---------------------------------------------------------
 require("lazy").setup({
   spec = {
     -- * Colorschemes
-    { "ellisonleao/gruvbox.nvim", opts = { contrast = "hard" } },
+    {
+      "ellisonleao/gruvbox.nvim",
+      priority = 1000,
+      opts = { contrast = "hard" },
+      init = function() vim.cmd("colorscheme gruvbox") end
+    },
+    {
+      "catppuccin/nvim",
+      lazy = true,
+      name = "catppuccin",
+      opts = { flavour = "mocha" },
+    },
+    {
+      "folke/tokyonight.nvim",
+      lazy = true,
+      opts = { style = "night" },
+    },
     -- * Languages tools
+    {
+      'neovim/nvim-lspconfig',
+      tag = "v1.7.0",
+      config = function() require("lazy.plugins.lspconfig") end,
+    },
     {
       "nvim-treesitter/nvim-treesitter",
       tag = "v0.9.3",
       build = ":TSUpdate",
-      config = function()
-        local configs = require("nvim-treesitter.configs")
-        configs.setup({
-          indent = { enable = true },
-          highlight = { enable = true },
-          ensure_installed = {
-            "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown",
-            "html", "css", "javascript", "typescript", "tsx",
-            "haskell",
-          },
-        })
-      end
-    },
-    {
-      'neovim/nvim-lspconfig',
-      config = function()
-        local lspconfig = require('lspconfig')
-
-        lspconfig.hls.setup({})
-
-        lspconfig.lua_ls.setup({
-          on_init = function(client)
-            if client.workspace_folders then
-              local path = client.workspace_folders[1].name
-              if path ~= vim.fn.stdpath('config') and (
-                  vim.loop.fs_stat(path..'/.luarc.json') or
-                  vim.loop.fs_stat(path..'/.luarc.jsonc')
-              ) then
-                return
-              end
-            end
-
-            client.config.settings.Lua = vim.tbl_deep_extend(
-              'force',
-              client.config.settings.Lua,
-              {
-                runtime = { version = 'LuaJIT' },
-                -- Make the server aware of Neovim runtime files
-                workspace = {
-                  library = {
-                    vim.env.VIMRUNTIME,
-                    "${3rd}/luv/library",
-                    "${3rd}/busted/library",
-                  },
-                  checkThirdParty = false,
-                }
-              }
-            )
-          end,
-          settings = { Lua = {} },
-        })
-
-        lspconfig.html.setup({})
-        lspconfig.cssls.setup({})
-        lspconfig.jsonls.setup({})
-
-        lspconfig.ts_ls.setup({ init_options = { maxTsServerMemory = 8192 } })
-        lspconfig.eslint.setup({})
-
-        lspconfig.pyright.setup({})
-      end
+      config = function() require("lazy.plugins.treesitter") end,
     },
     -- * Navigation
     {
-      "nvim-telescope/telescope.nvim", tag = "0.1.8",
-      dependencies = { "nvim-lua/plenary.nvim" },
-      opts = {
-        defaults = {
-          mappings = {
-            i = {
-              ["<C-j>"] = "move_selection_next",
-              ["<C-k>"] = "move_selection_previous",
-            }
-          }
-        }
-      },
+      "jlanzarotta/bufexplorer",
+      tag = "7.8.0",
+      keys = { {"<Space>", "<CMD>BufExplorer<CR>"} }
+    },
+    {
+      "nvim-telescope/telescope.nvim",
+      tag = "0.1.8",
+      opts = function() return require("lazy.plugins.telescope") end,
       keys = {
         { "<C-n>", "<CMD>Telescope oldfiles<CR>" },
         { "<C-s>", "<CMD>Telescope live_grep<CR>" },
         { "<C-p>", "<CMD>Telescope find_files<CR>" },
       },
+      dependencies = { "nvim-lua/plenary.nvim" },
     },
-    { "jlanzarotta/bufexplorer" },
     -- * Editing enhancements
     { "tpope/vim-surround" },
     { "tpope/vim-unimpaired" },
@@ -322,19 +276,32 @@ require("lazy").setup({
         end,
     },
     -- * Editing UI/UX
-    { 'j-hui/fidget.nvim', opts = {} },
+    { 'j-hui/fidget.nvim', tag = "v1.6.1", opts = {} },
     { "karb94/neoscroll.nvim", opts = { easing = 'sine' } },
     {
-        'nvim-lualine/lualine.nvim',
-        dependencies = { 'nvim-tree/nvim-web-devicons' },
-        opts = {
-          tabline = {
-            lualine_a = { { 'tabs', mode = 2 } },
-          }
+      'nvim-lualine/lualine.nvim',
+      opts = {
+        sections = {
+          lualine_x = { 'encoding', { 'filetype', colored = false } },
         },
+        tabline = {
+          lualine_a = { { 'tabs', mode = 1, show_modified_status = false } },
+        }
+      },
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
     },
-    -- nvim-treesitter/nvim-treesitter-context
+    { "nvim-treesitter/nvim-treesitter-context", opts = true },
+    -- * AI
+    {
+      "olimorris/codecompanion.nvim",
+      config = function() require("lazy.plugins.codecompanion") end,
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-treesitter/nvim-treesitter",
+      },
+    },
     -- * VCS
-    -- fugitive, gitgutter
+    -- fugitive
+    -- gitgutter
   },
 })
