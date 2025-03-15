@@ -14,8 +14,8 @@ vim.opt.softtabstop = 4                         -- Number of spaces to use for <
 
 vim.opt.wrap = true                             -- Wrap long lines
 vim.opt.linebreak = true                        -- Don't break words
-vim.opt.breakindent = true                      -- Visually indent each wrapped line with the same amount of space as the beginning of that line
 vim.opt.showbreak = "↪ "                        -- Show "↪ " at the beginning of wrapped lines
+vim.opt.breakindent = true                      -- Visually indent each wrapped line with the same amount of space as the beginning of that line
 
 vim.opt.list = true                             -- Display unprintable characters
 vim.opt.listchars = {}                          -- Strings to use in "list" mode:
@@ -27,7 +27,7 @@ vim.opt.listchars:append({ precedes = "❮" })    --   Character to show in the 
 
 vim.opt.display = {}                            -- Display settings:
 vim.opt.display:append("uhex")                  --   Show unprintable characters in hexadecimal as <xx>
-vim.opt.display:append("truncate")              --   Show "@@@" in the last screen line if the rest of the lin
+vim.opt.display:append("truncate")              --   Show "@@@" in the last screen line if the rest of the line
 
 -- Formatting
 vim.opt.textwidth = 78                          -- Maximum width of text when formatting
@@ -61,7 +61,7 @@ vim.opt.visualbell = true                       -- Use a visual bell instead of 
 vim.opt.cursorline = false                      -- Don't highlight the screen line of the cursor
 
 vim.opt.signcolumn = "number"                   -- Display signs in the "number" column.
-vim.opt.laststatus = 2                          -- Always display a statusline
+vim.opt.laststatus = 3                          -- Always display a statusline
 vim.opt.showtabline = 1                         -- Show tabs only if there are at least two tab pages
 
 -- Colors
@@ -95,7 +95,7 @@ vim.opt.wildignore:append(".DS_Store")          --   Ignore macOS 'Desktop Servi
 
 vim.opt.completeopt = {}                        -- A list of options for Insert mode completion:
 vim.opt.completeopt:append("menuone")           --   Use a popup menu even when there is only one match
-vim.opt.completeopt:append("preview")           --   Show additional information in a preview window
+vim.opt.completeopt:append("popup")             --   Show additional information in a popup window
 vim.opt.completeopt:append("noinsert")          --   Do not insert any text for a match
 vim.opt.completeopt:append("noselect")          --   Do not select a match in the menu
 
@@ -109,7 +109,7 @@ vim.opt.history = 1000                          -- Number of entries about last 
 vim.opt.undolevels = 1000                       -- Maximum number of changes that can be undone
 vim.opt.undoreload = 10000                      -- Save the whole buffer for undo when reloading it
 
-vim.opt.isfname:append("@-@")                   -- Take "@" symbol into account when extracting filenames
+vim.opt.isfname:append("@-@")                   -- Take "@" symbol into account when extracting filename
 
 vim.opt.ttimeout = true                         -- Timeout for key codes
 vim.opt.ttimeoutlen = 100                       -- Wait up to 100ms after <Esc> for special key
@@ -119,8 +119,8 @@ vim.opt.spell = false                           -- Disable spell checking by def
 vim.opt.spelllang = { "en", "ru" }              -- A list of word list names
 
 -- Performance
-vim.opt.synmaxcol = 3000                        -- Maximal column in which to search for syntax items
-vim.opt.updatetime = 2000                       -- Emit 'CursorHold' event after 2000ms
+vim.opt.synmaxcol = 1000                        -- Maximal column in which to search for syntax items
+vim.opt.updatetime = 300                        -- Emit 'CursorHold' event after 2000ms
 
 -- ===========================================================================
 -- ! Key mappings
@@ -136,19 +136,19 @@ vim.keymap.set("x", "<C-k>", ":move '<-2<CR>gv=gv", { noremap = true })
 vim.keymap.set("i", "jk", "<Esc>", { noremap = true })
 
 -- Reload Neovim config
-vim.keymap.set("n", "<leader>re", ":source $MYVIMRC<CR>", { noremap = true })
+vim.keymap.set("n", "<leader>q", ":source $MYVIMRC<CR>", { noremap = true })
 
 -- ===========================================================================
 -- Options for 'netrw' -------------------------------------------------------
 vim.g.netrw_hide = 1                              -- Hide files that match the specified patterns
 vim.g.netrw_banner = false                        -- Hide the banner at the top of the Netrw window
 vim.g.netrw_altfile = true                        -- Preserve the alternate file when opening files in Netrw
-vim.g.netrw_list_hide = "^\\.\\./$,^\\./$"        -- Hide (../) and (./) entries in Netrw
+vim.g.netrw_list_hide = [[^\.\./$,^\./$]]         -- Hide (../) and (./) entries in Netrw
 
 vim.keymap.set("n", "-", function()
   local filename = vim.fn.expand("%:t")
   vim.cmd("Explore")
-  vim.fn.search('\\<' .. vim.fn.escape(filename, '\\') .. '\\>')
+  vim.fn.search("\\<" .. vim.fn.escape(filename, "\\") .. "\\>")
 end, { noremap = true, silent = true })
 
 -- Options for 'bufexplorer' -------------------------------------------------
@@ -219,88 +219,141 @@ require("lazy").setup({
   spec = {
     -- * Colorschemes
     {
-      "ellisonleao/gruvbox.nvim",
-      priority = 1000,
-      opts = { contrast = "hard" },
-      init = function() vim.cmd("colorscheme gruvbox") end
-    },
-    {
       "catppuccin/nvim",
-      lazy = true,
+      priority = 1000,
       name = "catppuccin",
       opts = { flavour = "mocha" },
     },
     {
       "folke/tokyonight.nvim",
-      lazy = true,
+      priority = 1000,
       opts = { style = "night" },
+    },
+    {
+      "ellisonleao/gruvbox.nvim",
+      priority = 1000,
+      opts = { contrast = "hard" },
+    },
+    {
+      "rebelot/kanagawa.nvim",
+      priority = 1000,
+      opts = { compile = true },
+      config = function(_, opts)
+        require("kanagawa").setup(opts)
+        vim.cmd("colorscheme kanagawa")
+      end
     },
     -- * Languages tools
     {
-      'neovim/nvim-lspconfig',
+      "neovim/nvim-lspconfig",
       tag = "v1.7.0",
-      config = function() require("lazy.plugins.lspconfig") end,
+      config = function() require("plugins.lspconfig") end,
+      dependencies = { "saghen/blink.cmp" },
     },
     {
       "nvim-treesitter/nvim-treesitter",
       tag = "v0.9.3",
       build = ":TSUpdate",
-      config = function() require("lazy.plugins.treesitter") end,
+      config = function() require("plugins.treesitter") end,
     },
     -- * Navigation
     {
       "jlanzarotta/bufexplorer",
       tag = "7.8.0",
-      keys = { {"<Space>", "<CMD>BufExplorer<CR>"} }
+      cmd = { "BufExplorer" },
+      keys = { {"<Space>", "<CMD>BufExplorer<CR>"} },
     },
     {
       "nvim-telescope/telescope.nvim",
       tag = "0.1.8",
-      opts = function() return require("lazy.plugins.telescope") end,
       keys = {
-        { "<C-n>", "<CMD>Telescope oldfiles<CR>" },
-        { "<C-s>", "<CMD>Telescope live_grep<CR>" },
-        { "<C-p>", "<CMD>Telescope find_files<CR>" },
+        { "<C-n>", "<CMD>lua require('telescope.builtin').oldfiles()<CR>" },
+        { "<C-p>", "<CMD>lua require('telescope.builtin').find_files()<CR>" },
+        { "<leader>b", "<CMD>lua require('telescope.builtin').buffers()<CR>" },
+        { "<leader>f", "<CMD>lua require('telescope.builtin').live_grep()<CR>" },
+        { "<leader>g", "<CMD>lua require('telescope.builtin').grep_string()<CR>" },
+        { "<leader>r", "<CMD>lua require('telescope.builtin').lsp_references()<CR>" },
       },
-      dependencies = { "nvim-lua/plenary.nvim" },
+      config = function() require("plugins.telescope") end,
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-telescope/telescope-fzy-native.nvim",
+      },
     },
     -- * Editing enhancements
     { "tpope/vim-surround" },
     { "tpope/vim-unimpaired" },
+    { "AndrewRadev/splitjoin.vim" },
     {
-        "AndrewRadev/splitjoin.vim",
-        init = function()
-            vim.g.splitjoin_join_mapping = "gJ"
-            vim.g.splitjoin_split_mapping = "gS"
-        end,
+      "saghen/blink.cmp",
+      version = "*",
+      config = function() require("plugins.blinkcmp") end,
     },
     -- * Editing UI/UX
-    { 'j-hui/fidget.nvim', tag = "v1.6.1", opts = {} },
-    { "karb94/neoscroll.nvim", opts = { easing = 'sine' } },
+    { "j-hui/fidget.nvim", tag = "v1.6.1", opts = {} },
+    { "karb94/neoscroll.nvim", opts = { easing = "sine" } },
     {
-      'nvim-lualine/lualine.nvim',
+      "lukas-reineke/indent-blankline.nvim",
+      tag = "v3.8.7",
       opts = {
-        sections = {
-          lualine_x = { 'encoding', { 'filetype', colored = false } },
-        },
-        tabline = {
-          lualine_a = { { 'tabs', mode = 1, show_modified_status = false } },
-        }
+        scope = { show_start = false, show_end = false },
+        indent = { char = "┋" },
       },
-      dependencies = { 'nvim-tree/nvim-web-devicons' },
+      main = "ibl",
+      event = 'VeryLazy',
     },
-    { "nvim-treesitter/nvim-treesitter-context", opts = true },
+    {
+      "nvim-treesitter/nvim-treesitter-context",
+      cmd = {
+        "TSContextToggle",
+        "TSContextEnable",
+        "TSContextDisable",
+      },
+      keys = {
+        { "<leader>c", "<CMD>TSContextToggle<CR>" },
+      },
+      opts = { enable = false, mode = "topline" },
+    },
+    {
+      "SmiteshP/nvim-navic",
+      opts = {
+        lsp = { auto_attach = true },
+        separator = "  ",
+        highlight = true,
+      },
+      dependencies = {
+        "neovim/nvim-lspconfig",
+      },
+    },
+    {
+      "nvim-lualine/lualine.nvim",
+      config = function() require("plugins.lualine") end,
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+        "SmiteshP/nvim-navic",
+      },
+    },
+    -- * VCS
+    { "tpope/vim-fugitive" },
+    {
+      "lewis6991/gitsigns.nvim",
+      opts = true,
+      config = function() require("plugins.gitsigns") end,
+    },
     -- * AI
     {
       "olimorris/codecompanion.nvim",
-      config = function() require("lazy.plugins.codecompanion") end,
+      cmd = {
+        "CodeCompanion",
+        "CodeCompanionCmd",
+        "CodeCompanionChat",
+        "CodeCompanionActions",
+      },
+      config = function() require("plugins.codecompanion") end,
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-treesitter/nvim-treesitter",
       },
     },
-    -- * VCS
-    -- fugitive
-    -- gitgutter
   },
 })
