@@ -6,7 +6,9 @@ require("blink.cmp").setup({
     ["<C-p>"] = { "show", "select_prev" },
     ["<C-n>"] = { "show", "select_next" },
     ["<C-b>"] = { "scroll_documentation_up" },
+    ["<C-u>"] = { "scroll_documentation_up" },
     ["<C-f>"] = { "scroll_documentation_down" },
+    ["<C-d>"] = { "scroll_documentation_down" },
     ["<C-k>"] = {
       "show_documentation",
       "hide_documentation",
@@ -27,6 +29,13 @@ require("blink.cmp").setup({
     keyword = { range = "full" },
   },
   sources = {
-    providers = { path = { opts = { trailing_slash = false } } }
+    providers = {
+      path = {
+        opts = {
+          trailing_slash = false,
+          label_trailing_slash = false,
+        },
+      },
+    }
   },
 })

@@ -20,8 +20,8 @@ vim.opt.breakindent = true                      -- Visually indent each wrapped 
 vim.opt.list = true                             -- Display unprintable characters
 vim.opt.listchars = {}                          -- Strings to use in "list" mode:
 vim.opt.listchars:append({ tab = "▸ " })        --   Characters to show for a tab
-vim.opt.listchars:append({ nbsp = "×" })        --   Character to show for a non-breakable space
-vim.opt.listchars:append({ trail = "·" })       --   Character to show for trailing spaces
+vim.opt.listchars:append({ nbsp = "␣" })        --   Character to show for a non-breakable space
+vim.opt.listchars:append({ trail = "⋅" })       --   Character to show for trailing spaces
 vim.opt.listchars:append({ extends = "❯" })     --   Character to show in the last column
 vim.opt.listchars:append({ precedes = "❮" })    --   Character to show in the first visible column of the physical line
 
@@ -48,7 +48,6 @@ vim.opt.incsearch = true                        -- Search the pattern while typi
 vim.opt.gdefault = false                        -- Turn off global substitution by default
 vim.opt.ignorecase = false                      -- Turn off ignoring case in search patterns by default
 vim.opt.smartcase = false                       -- Always turn off ignoring case in search patterns
-vim.cmd("nohlsearch")                           -- Turn off current highlight when reloading '.vimrc'
 
 -- Appearance
 vim.opt.title = true                            -- Set the terminal title
@@ -112,7 +111,7 @@ vim.opt.undoreload = 10000                      -- Save the whole buffer for und
 vim.opt.isfname:append("@-@")                   -- Take "@" symbol into account when extracting filename
 
 vim.opt.ttimeout = true                         -- Timeout for key codes
-vim.opt.ttimeoutlen = 100                       -- Wait up to 100ms after <Esc> for special key
+vim.opt.ttimeoutlen = 50                       -- Wait up to 50ms after <Esc> for special key
 
 -- Spell checking
 vim.opt.spell = false                           -- Disable spell checking by default
@@ -120,23 +119,18 @@ vim.opt.spelllang = { "en", "ru" }              -- A list of word list names
 
 -- Performance
 vim.opt.synmaxcol = 1000                        -- Maximal column in which to search for syntax items
-vim.opt.updatetime = 300                        -- Emit 'CursorHold' event after 2000ms
+vim.opt.updatetime = 300                        -- Emit 'CursorHold' event after 300ms
 
 -- ===========================================================================
 -- ! Key mappings
-vim.keymap.set("n", "Q", "<Nop>", { noremap = true })
+vim.keymap.set("n", "Q", "<Nop>")
+vim.keymap.set("n", "s", "<Nop>")
 
 -- Move lines up and down
 vim.keymap.set("n", "<C-j>", ":move .+1<CR>==", { noremap = true })
 vim.keymap.set("n", "<C-k>", ":move .-2<CR>==", { noremap = true })
 vim.keymap.set("x", "<C-j>", ":move '>+1<CR>gv=gv", { noremap = true })
 vim.keymap.set("x", "<C-k>", ":move '<-2<CR>gv=gv", { noremap = true })
-
--- Use 'jk' to exit insert mode
-vim.keymap.set("i", "jk", "<Esc>", { noremap = true })
-
--- Reload Neovim config
-vim.keymap.set("n", "<leader>q", ":source $MYVIMRC<CR>", { noremap = true })
 
 -- ===========================================================================
 -- Options for 'netrw' -------------------------------------------------------
@@ -160,9 +154,10 @@ vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
 vim.g.bufExplorerSplitOutPathName = false         -- Do not split the filename and path
 vim.g.bufExplorerDisableDefaultKeyMapping = true  -- Disable default key mappings
 
-vim.api.nvim_create_augroup("vimrc_plugin_bufexplorer_setup", { clear = true })
+vim.api.nvim_create_augroup("vimrc_bufexplorer_setup", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
-  group = "vimrc_plugin_bufexplorer_setup",
+  desc = "Additional keymaps for bufexplorer",
+  group = "vimrc_bufexplorer_setup",
   pattern = "bufexplorer",
   callback = function()
     vim.api.nvim_buf_set_keymap(0, "n", "?", "<F1>", { silent = true })
@@ -180,8 +175,10 @@ elseif vim.fn.executable("grep") == 1 then
   vim.opt.grepprg = "grep -n"
 end
 
+vim.api.nvim_create_augroup("vimrc_highlight_on_yank", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
-  pattern = "*",
+  desc = "Highlight when yanking (copying) text",
+  group = "vimrc_highlight_on_yank",
   callback = function()
     vim.highlight.on_yank({ higroup = "IncSearch", timeout = 200 })
   end,
@@ -248,7 +245,10 @@ require("lazy").setup({
       "neovim/nvim-lspconfig",
       tag = "v1.7.0",
       config = function() require("plugins.lspconfig") end,
-      dependencies = { "saghen/blink.cmp" },
+      dependencies = {
+        "saghen/blink.cmp",
+        "j-hui/fidget.nvim",
+      },
     },
     {
       "nvim-treesitter/nvim-treesitter",
@@ -261,22 +261,20 @@ require("lazy").setup({
       "jlanzarotta/bufexplorer",
       tag = "7.8.0",
       cmd = { "BufExplorer" },
-      keys = { {"<Space>", "<CMD>BufExplorer<CR>"} },
+      keys = {
+        { "<Space>", "<CMD>BufExplorer<CR>", desc = "open buffer explorer" },
+      },
     },
     {
       "nvim-telescope/telescope.nvim",
       tag = "0.1.8",
-      keys = {
-        { "<C-n>", "<CMD>lua require('telescope.builtin').oldfiles()<CR>" },
-        { "<C-p>", "<CMD>lua require('telescope.builtin').find_files()<CR>" },
-        { "<leader>b", "<CMD>lua require('telescope.builtin').buffers()<CR>" },
-        { "<leader>f", "<CMD>lua require('telescope.builtin').live_grep()<CR>" },
-        { "<leader>g", "<CMD>lua require('telescope.builtin').grep_string()<CR>" },
-        { "<leader>r", "<CMD>lua require('telescope.builtin').lsp_references()<CR>" },
-      },
+      event = "VeryLazy",
       config = function() require("plugins.telescope") end,
       dependencies = {
         "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-web-devicons",
+        "nvim-telescope/telescope-symbols.nvim",
+        "nvim-telescope/telescope-ui-select.nvim",
         "nvim-telescope/telescope-fzy-native.nvim",
       },
     },
@@ -287,20 +285,63 @@ require("lazy").setup({
     {
       "saghen/blink.cmp",
       version = "*",
+      event = "InsertEnter",
       config = function() require("plugins.blinkcmp") end,
     },
     -- * Editing UI/UX
     { "j-hui/fidget.nvim", tag = "v1.6.1", opts = {} },
     { "karb94/neoscroll.nvim", opts = { easing = "sine" } },
     {
+      "folke/which-key.nvim",
+      event = "VeryLazy",
+      tag = "v3.17.0",
+      opts = {
+        delay = 0,
+        spec = {
+          { "<leader>c", group = "[c]ode", mode = { "n", "x" } },
+          { "<leader>d", group = "[d]ocument" },
+          { "<leader>w", group = "[w]orkspace" },
+          { "<leader>t", group = "[t]oggle" },
+          { "<leader>h", group = "git [h]unk", mode = { "n", "v" } },
+          { "gS", desc = "perform [s]plitting code" },
+          { "gJ", desc = "perform [j]oining code" },
+          { "zb", hidden = true },
+          { "zt", hidden = true },
+          { "zz", hidden = true },
+          { "gx", hidden = true },
+          { "g%", hidden = true },
+        },
+        plugins = {
+          marks = false,
+          registers = false,
+          spelling = { enabled = false },
+          presets = {
+            text_objects = false,
+            operators = false,
+            motions = false,
+            windows = false,
+            nav = false,
+            z = false,
+            g = false,
+          },
+        },
+      },
+    },
+    {
+      "folke/todo-comments.nvim",
+      opts = {},
+      event = "VeryLazy",
+      dependencies = { "nvim-lua/plenary.nvim" },
+    },
+    {
       "lukas-reineke/indent-blankline.nvim",
       tag = "v3.8.7",
+      main = "ibl",
       opts = {
         scope = { show_start = false, show_end = false },
         indent = { char = "┋" },
       },
-      main = "ibl",
-      event = 'VeryLazy',
+      event = "VeryLazy",
     },
     {
       "nvim-treesitter/nvim-treesitter-context",
@@ -310,7 +351,7 @@ require("lazy").setup({
         "TSContextDisable",
       },
       keys = {
-        { "<leader>c", "<CMD>TSContextToggle<CR>" },
+        { "<leader>tc", "<CMD>TSContextToggle<CR>", desc = "[t]oggle [c]ontext pane" },
       },
       opts = { enable = false, mode = "topline" },
     },
@@ -329,15 +370,14 @@ require("lazy").setup({
       "nvim-lualine/lualine.nvim",
       config = function() require("plugins.lualine") end,
       dependencies = {
-        "nvim-tree/nvim-web-devicons",
         "SmiteshP/nvim-navic",
+        "nvim-tree/nvim-web-devicons",
       },
     },
     -- * VCS
     { "tpope/vim-fugitive" },
     {
       "lewis6991/gitsigns.nvim",
-      opts = true,
       config = function() require("plugins.gitsigns") end,
     },
     -- * AI

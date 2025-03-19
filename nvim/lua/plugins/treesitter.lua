@@ -13,8 +13,8 @@ configs.setup({
     },
   },
   ensure_installed = {
-    "c", "cpp", "lua", "vim", "vimdoc", "query", "markdown",
+    "c", "cpp", "lua", "vim", "vimdoc", "markdown",
     "html", "css", "javascript", "typescript", "tsx",
-    "haskell", "yaml",
+    "bash", "haskell", "yaml",
   },
 })

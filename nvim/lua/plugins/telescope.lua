@@ -1,3 +1,4 @@
+local builtin = require("telescope.builtin")
 local actions = require("telescope.actions")
 local actions_layout = require("telescope.actions.layout")
 
@@ -5,20 +6,16 @@ local function multiopen(prompt_bufnr, open_cmd)
   local actions_state = require("telescope.actions.state")
   local picker = actions_state.get_current_picker(prompt_bufnr)
   local multi_selection = picker:get_multi_selection()
-  local single_selection = actions_state.get_selected_entry()
-
-  actions.close(prompt_bufnr)
 
   if not vim.tbl_isempty(multi_selection) then
+    actions.close(prompt_bufnr)
     for _, file in pairs(multi_selection) do
       if file.path ~= nil then
-        vim.cmd(string.format('%s %s', open_cmd, file.path))
+        vim.cmd(string.format("%s %s", open_cmd, file.path))
       end
     end
   else
-    if single_selection.path ~= nil then
-      vim.cmd(string.format('%s %s', open_cmd, single_selection.path))
-    end
+    actions.select_default(prompt_bufnr)
   end
 end
 
@@ -38,14 +35,14 @@ local function multiopen_vsplit(prompt_bufnr)
   multiopen(prompt_bufnr, "vsplit")
 end
 
-require('telescope').setup({
+require("telescope").setup({
   defaults = {
     path_display = { truncate = true },
     scroll_strategy = "limit",
     layout_config = {
       prompt_position = "top",
     },
-    sorting_strategy = 'ascending',
+    sorting_strategy = "ascending",
     mappings = {
       i = {
         ["<CR>"] = multiopen_buf,
@@ -63,9 +60,9 @@ require('telescope').setup({
         ["<C-h>"] = actions_layout.toggle_preview,
       }
     },
-    multi_icon = "",
+    multi_icon = "•",
     entry_prefix = "  ",
-    prompt_prefix = "$ ",
+    prompt_prefix = " ",
     selection_caret = "❯ ",
   },
   pickers = {
@@ -77,7 +74,27 @@ require('telescope').setup({
         }
       }
     }
-  }
+  },
+  extensions = {
+    ["ui-select"] = {
+      require("telescope.themes").get_dropdown(),
+    }
+  },
 })
 
-require('telescope').load_extension('fzy_native')
+require("telescope").load_extension("ui-select")
+require("telescope").load_extension("fzy_native")
+
+vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[s]earch [f]iles" })
+vim.keymap.set("n", "<leader>sr", builtin.oldfiles, { desc = "[s]earch [r]ecent files" })
+vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[s]earch using [g]rep" })
+vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[s]earch for [w]ord under cursor" })
+vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "[s]earch [b]uffers" })
+vim.keymap.set("n", "<leader>se", builtin.symbols, { desc = "[s]earch [e]moji" })
+vim.keymap.set("n", "<leader>ss", builtin.resume, { desc = "[s]earch re[s]ume" })
+vim.keymap.set("n", "<leader>s/", function()
+  builtin.live_grep({
+    prompt_title = "Live Grep in Open Files",
+    grep_open_files = true,
+  })
+end, { desc = "[s]earch [/] in open files" })
