@@ -124,7 +124,6 @@ vim.opt.updatetime = 300                        -- Emit 'CursorHold' event after
 -- ===========================================================================
 -- ! Key mappings
 vim.keymap.set("n", "Q", "<Nop>")
-vim.keymap.set("n", "s", "<Nop>")
 
 -- Move lines up and down
 vim.keymap.set("n", "<C-j>", ":move .+1<CR>==", { noremap = true })
@@ -243,7 +242,7 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      tag = "v1.7.0",
+      version = "v1.7.x",
       config = function() require("plugins.lspconfig") end,
       dependencies = {
         "saghen/blink.cmp",
@@ -252,22 +251,22 @@ require("lazy").setup({
     },
     {
       "nvim-treesitter/nvim-treesitter",
-      tag = "v0.9.3",
+      version = "v0.9.x",
       build = ":TSUpdate",
       config = function() require("plugins.treesitter") end,
     },
     -- * Navigation
     {
       "jlanzarotta/bufexplorer",
-      tag = "7.8.0",
+      version = "7.8.x",
       cmd = { "BufExplorer" },
       keys = {
-        { "<Space>", "<CMD>BufExplorer<CR>", desc = "open buffer explorer" },
+        { "<Space>", ":BufExplorer<CR>", desc = "Open buffer list" },
       },
     },
     {
       "nvim-telescope/telescope.nvim",
-      tag = "0.1.8",
+      version = "0.1.x",
       event = "VeryLazy",
       config = function() require("plugins.telescope") end,
       dependencies = {
@@ -275,10 +274,11 @@ require("lazy").setup({
         "nvim-tree/nvim-web-devicons",
         "nvim-telescope/telescope-symbols.nvim",
         "nvim-telescope/telescope-ui-select.nvim",
-        "nvim-telescope/telescope-fzy-native.nvim",
+        { "nvim-telescope/telescope-fzy-native.nvim", build = "make" },
       },
     },
     -- * Editing enhancements
+    { "tpope/vim-repeat" },
     { "tpope/vim-surround" },
     { "tpope/vim-unimpaired" },
     { "AndrewRadev/splitjoin.vim" },
@@ -289,59 +289,31 @@ require("lazy").setup({
       config = function() require("plugins.blinkcmp") end,
     },
     -- * Editing UI/UX
-    { "j-hui/fidget.nvim", tag = "v1.6.1", opts = {} },
-    { "karb94/neoscroll.nvim", opts = { easing = "sine" } },
+    { "j-hui/fidget.nvim", version = "v1.6.x", opts = {} },
     {
-      "folke/which-key.nvim",
-      event = "VeryLazy",
-      tag = "v3.17.0",
-      opts = {
-        delay = 0,
-        spec = {
-          { "<leader>c", group = "[c]ode", mode = { "n", "x" } },
-          { "<leader>d", group = "[d]ocument" },
-          { "<leader>w", group = "[w]orkspace" },
-          { "<leader>t", group = "[t]oggle" },
-          { "<leader>h", group = "git [h]unk", mode = { "n", "v" } },
-          { "gS", desc = "perform [s]plitting code" },
-          { "gJ", desc = "perform [j]oining code" },
-          { "zb", hidden = true },
-          { "zt", hidden = true },
-          { "zz", hidden = true },
-          { "gx", hidden = true },
-          { "g%", hidden = true },
-        },
-        plugins = {
-          marks = false,
-          registers = false,
-          spelling = { enabled = false },
-          presets = {
-            text_objects = false,
-            operators = false,
-            motions = false,
-            windows = false,
-            nav = false,
-            z = false,
-            g = false,
-          },
-        },
+      "karb94/neoscroll.nvim",
+      opts = { easing = "sine" },
+      keys = {
+        '<C-u>', '<C-d>',
+        '<C-b>', '<C-f>',
+        '<C-y>', '<C-e>',
+        'zt', 'zz', 'zb',
       },
     },
     {
       "folke/todo-comments.nvim",
+      version = "v1.4.x",
       opts = {},
-      event = "VeryLazy",
       dependencies = { "nvim-lua/plenary.nvim" },
     },
     {
       "lukas-reineke/indent-blankline.nvim",
-      tag = "v3.8.7",
+      version = "v3.8.x",
       main = "ibl",
       opts = {
         scope = { show_start = false, show_end = false },
         indent = { char = "┋" },
       },
-      event = "VeryLazy",
     },
     {
       "nvim-treesitter/nvim-treesitter-context",
@@ -351,17 +323,16 @@ require("lazy").setup({
         "TSContextDisable",
       },
       keys = {
-        { "<leader>tc", "<CMD>TSContextToggle<CR>", desc = "[t]oggle [c]ontext pane" },
+        { "<leader>tc", ":TSContextToggle<CR>", desc = "Toggle TreeSitter context" },
       },
       opts = { enable = false, mode = "topline" },
     },
     {
       "SmiteshP/nvim-navic",
-      opts = {
-        lsp = { auto_attach = true },
-        separator = "  ",
-        highlight = true,
+      keys = {
+        { "<leader>tn" },
       },
+      config = function() require("plugins.navic") end,
       dependencies = {
         "neovim/nvim-lspconfig",
       },
@@ -370,7 +341,6 @@ require("lazy").setup({
       "nvim-lualine/lualine.nvim",
       config = function() require("plugins.lualine") end,
       dependencies = {
-        "SmiteshP/nvim-navic",
         "nvim-tree/nvim-web-devicons",
       },
     },

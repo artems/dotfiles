@@ -15,18 +15,20 @@ require("blink.cmp").setup({
       "show_signature",
       "hide_signature",
     },
+    ['<Tab>'] = { 'snippet_forward', 'fallback' },
+    ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
   },
   cmdline = { enabled = false },
   signature = {
     enabled = true,
     trigger = { enabled = false },
-    window = { show_documentation = true }
+    window = { show_documentation = false }
   },
   completion = {
     menu = { auto_show = false, draw = { treesitter = { "lsp" } } },
     list = { selection = { preselect = false, auto_insert = true } },
     accept = { auto_brackets = { enabled = false } },
-    keyword = { range = "full" },
+    keyword = { range = "prefix" },
   },
   sources = {
     providers = {

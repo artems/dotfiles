@@ -65,7 +65,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(event)
     local map = function(keys, func, desc, mode)
       mode = mode or "n"
-      vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "lsp: " .. desc })
+      vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
     end
 
     local lazy_telescope = function(func)
@@ -76,32 +76,32 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     -- Jump to the definition of the word under cursor.
-    map("gd", vim.lsp.buf.definition, "[g]oto [d]efinition")
+    map("gd", vim.lsp.buf.definition, "Goto definition")
 
     -- Jump to the implementation of the word under cursor.
-    map("gI", vim.lsp.buf.implementation, "[g]oto [I]mplementation")
+    map("gI", vim.lsp.buf.implementation, "Goto implementation")
 
     -- Jump to the type definition of the word under cursor.
-    map("gD", vim.lsp.buf.type_definition, "[g]oto type [D]efinition")
+    map("gD", vim.lsp.buf.type_definition, "Goto type definition")
 
     -- Find references for the word under your cursor.
-    map("gR", vim.lsp.buf.references, "[g]oto [R]eferences")
+    map("gR", lazy_telescope("lsp_references"), "Goto references")
 
     -- Fuzzy find all the symbols in your current document.
-    map("<leader>ds", lazy_telescope("lsp_document_symbols"), "[d]ocument [s]ymbols")
+    map("<leader>ds", lazy_telescope("lsp_document_symbols"), "Search document symbols")
 
     -- Fuzzy find all the symbols in your current workspace.
-    map("<leader>ws", lazy_telescope("lsp_dynamic_workspace_symbols"), "[w]orkspace [s]ymbols")
+    map("<leader>ws", lazy_telescope("lsp_dynamic_workspace_symbols"), "Search workspace symbols")
 
     -- Rename the variable under cursor.
-    map("<leader>cr", vim.lsp.buf.rename, "[c]ode action: [r]ename")
+    map("<leader>cr", vim.lsp.buf.rename, "Code action: Rename")
 
     -- Execute a code action
-    map("<leader>ca", vim.lsp.buf.code_action, "[c]ode [a]ction", { "n", "x" })
+    map("<leader>ca", vim.lsp.buf.code_action, "Code action: Choose", { "n", "x" })
 
     -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
     local function client_supports_method(client, method, bufnr)
-      if vim.fn.has "nvim-0.11" == 1 then
+      if vim.fn.has("nvim-0.11") == 1 then
         return client:supports_method(method, bufnr)
       else
         return client.supports_method(method, { bufnr = bufnr })
@@ -137,8 +137,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
     )
     if inlayHintAbailable then
       map("<leader>th", function()
-        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-      end, "[t]oggle inlay [h]ints")
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
+      end, "Toggle inlay hints")
     end
   end,
 })

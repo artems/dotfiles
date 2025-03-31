@@ -6,11 +6,10 @@ require("codecompanion").setup({
   },
   adapters = {
     opts = {
-      allow_insecure = true,
+      show_defaults = false,
     },
     custom_anthropic = function()
       return require("codecompanion.adapters").extend("anthropic", {
-        name = "custom",
         url = "http://api.eliza.yandex.net/anthropic/v1/messages",
         env = { api_key = "SOY_TOKEN" },
         schema = {
