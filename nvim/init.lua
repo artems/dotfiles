@@ -266,9 +266,12 @@ require("lazy").setup({
     },
     {
       "nvim-telescope/telescope.nvim",
-      version = "0.1.x",
       event = "VeryLazy",
       config = function() require("plugins.telescope") end,
+      keys = {
+        { "<C-p>", ":Telescope find_files<CR>" },
+        { "<C-n>", ":Telescope oldfiles<CR>" },
+      },
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",

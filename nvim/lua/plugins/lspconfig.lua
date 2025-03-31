@@ -68,24 +68,34 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
     end
 
-    local lazy_telescope = function(func)
+    local lazy_telescope = function(func, opts)
       return function(...)
         local telescope = require("telescope.builtin")
-        return telescope[func](...)
+        opts = opts or require('telescope.themes').get_dropdown()
+
+        local args = {...}
+        if args[1] and type(args[1]) == "table" then
+          local merged_opts = vim.tbl_deep_extend("force", opts, args[1])
+          args[1] = merged_opts
+        else
+          table.insert(args, 1, opts)
+        end
+
+        return telescope[func](unpack(args))
       end
     end
 
     -- Jump to the definition of the word under cursor.
-    map("gd", vim.lsp.buf.definition, "Goto definition")
-
-    -- Jump to the implementation of the word under cursor.
-    map("gI", vim.lsp.buf.implementation, "Goto implementation")
-
-    -- Jump to the type definition of the word under cursor.
-    map("gD", vim.lsp.buf.type_definition, "Goto type definition")
+    map("gd", lazy_telescope("lsp_definitions"), "Goto definition")
 
     -- Find references for the word under your cursor.
-    map("gR", lazy_telescope("lsp_references"), "Goto references")
+    map("gr", lazy_telescope("lsp_references"), "Goto references")
+
+    -- Jump to the implementation of the word under cursor.
+    map("gI", lazy_telescope("lsp_implementations"), "Goto implementation")
+
+    -- Jump to the type definition of the word under cursor.
+    map("gD", lazy_telescope("lsp_type_definitions"), "Goto type definition")
 
     -- Fuzzy find all the symbols in your current document.
     map("<leader>ds", lazy_telescope("lsp_document_symbols"), "Search document symbols")

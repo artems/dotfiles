@@ -2,7 +2,7 @@ local function location()
   local line = vim.fn.line('.')
   local column = vim.fn.charcol('.')
 
-  return " " .. string.format('%3d:%-2d', column, line)
+  return " " .. string.format('%2d:%-3d', column, line)
 end
 
 local format_symbols = {
@@ -20,7 +20,7 @@ end
 local function encoding_not_utf_8()
   local format = vim.bo.fileformat
   local encoding = vim.opt.fileencoding:get()
-  return encoding and (format ~= "unix" or encoding ~= "utf-8")
+  return format ~= "unix" or (encoding ~= "utf-8" and encoding ~= "")
 end
 
 require("lualine").setup({

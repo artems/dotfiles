@@ -47,7 +47,7 @@ end
 
 require("telescope").setup({
   defaults = {
-    path_display = { truncate = true },
+    path_display = { "filename_first" },
     scroll_strategy = "limit",
     layout_config = {
       prompt_position = "top",
@@ -67,13 +67,16 @@ require("telescope").setup({
         ["<C-h>"] = actions_layout.toggle_preview,
       },
       n = {
+        ["q"] = actions.close,
+        ["<Esc>"] = actions.close,
+        ["<C-c>"] = actions.close,
         ["<C-h>"] = actions_layout.toggle_preview,
       }
     },
     multi_icon = "•",
     entry_prefix = "  ",
     prompt_prefix = " ",
-    selection_caret = "❯ ",
+    selection_caret = " ",
   },
   pickers = {
     buffers = {
