@@ -95,8 +95,8 @@ require("telescope").setup({
   },
 })
 
+require("telescope").load_extension("fzf")
 require("telescope").load_extension("ui-select")
-require("telescope").load_extension("fzy_native")
 
 vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "Search files" })
 vim.keymap.set("n", "<leader>sr", builtin.oldfiles, { desc = "Open recent files" })
@@ -110,4 +110,4 @@ vim.keymap.set("n", "<leader>s/", function()
     prompt_title = "Live Grep in Open Files",
     grep_open_files = true,
   })
-end, { desc = "[s]earch [/] in open files" })
+end, { desc = "Search in open files" })

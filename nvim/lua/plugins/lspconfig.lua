@@ -42,11 +42,18 @@ lspconfig.ts_ls.setup({
   init_options = { maxTsServerMemory = 8192 },
 })
 lspconfig.eslint.setup({ capabilities = capabilities })
+lspconfig.stylelint_lsp.setup({ capabilities = capabilities })
 
 lspconfig.hls.setup({ capabilities = capabilities })
 lspconfig.clangd.setup({ capabilities = capabilities })
 lspconfig.yamlls.setup({ capabilities = capabilities })
 lspconfig.pyright.setup({ capabilities = capabilities })
+
+vim.keymap.del("n", "grn")
+vim.keymap.del("n", "gra")
+vim.keymap.del("n", "grr")
+vim.keymap.del("n", "gri")
+vim.keymap.del("n", "gO")
 
 vim.diagnostic.config({
   signs = {
@@ -57,6 +64,7 @@ vim.diagnostic.config({
       [vim.diagnostic.severity.HINT] = "󰌶",
     },
   },
+  float = { border = "solid" }
 })
 
 vim.api.nvim_create_augroup("vimrc_lspconfig_attach", { clear = true })
@@ -85,6 +93,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
       end
     end
 
+    map('K', function()
+      vim.lsp.buf.hover({ border = "solid" })
+    end, "Show information about the symobl under the cursor")
+
     -- Jump to the definition of the word under cursor.
     map("gd", lazy_telescope("lsp_definitions"), "Goto definition")
 
@@ -109,7 +121,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     -- Execute a code action
     map("<leader>ca", vim.lsp.buf.code_action, "Code action: Choose", { "n", "x" })
 
-    -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
+    -- This function resolves a difference between neovim version 0.11 and version 0.10
     local function client_supports_method(client, method, bufnr)
       if vim.fn.has("nvim-0.11") == 1 then
         return client:supports_method(method, bufnr)

@@ -59,8 +59,8 @@ vim.opt.showmatch = false                       -- Don't jump to the matching br
 vim.opt.visualbell = true                       -- Use a visual bell instead of beeping
 vim.opt.cursorline = false                      -- Don't highlight the screen line of the cursor
 
-vim.opt.signcolumn = "number"                   -- Display signs in the "number" column.
-vim.opt.laststatus = 3                          -- Always display a statusline
+vim.opt.signcolumn = "yes"                      -- Display signs
+vim.opt.laststatus = 3                          -- Always display a global statusline
 vim.opt.showtabline = 1                         -- Show tabs only if there are at least two tab pages
 
 -- Colors
@@ -146,8 +146,8 @@ end, { noremap = true, silent = true })
 
 -- Options for 'bufexplorer' -------------------------------------------------
 vim.g.bufExplorerSortBy = "mru"                   -- Sort buffers by most recently used
-vim.g.bufExplorerFindActive = true                -- Automatically find the active buffer
-vim.g.bufExplorerShowTabBuffer = false            -- Do not show buffers from other tabs
+vim.g.bufExplorerFindActive = false               -- Always open buffer in current window
+vim.g.bufExplorerShowTabBuffer = false            -- Show buffers from other tabs
 vim.g.bufExplorerShowDirectories = false          -- Do not show directories
 vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
 vim.g.bufExplorerSplitOutPathName = false         -- Do not split the filename and path
@@ -242,11 +242,10 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      version = "v1.7.x",
+      version = "v2.1.x",
       config = function() require("plugins.lspconfig") end,
       dependencies = {
         "saghen/blink.cmp",
-        "j-hui/fidget.nvim",
       },
     },
     {
@@ -258,7 +257,6 @@ require("lazy").setup({
     -- * Navigation
     {
       "jlanzarotta/bufexplorer",
-      version = "7.8.x",
       cmd = { "BufExplorer" },
       keys = {
         { "<Space>", ":BufExplorer<CR>", desc = "Open buffer list" },
@@ -266,8 +264,8 @@ require("lazy").setup({
     },
     {
       "nvim-telescope/telescope.nvim",
-      event = "VeryLazy",
       config = function() require("plugins.telescope") end,
+      event = "VeryLazy",
       keys = {
         { "<C-p>", ":Telescope find_files<CR>" },
         { "<C-n>", ":Telescope oldfiles<CR>" },
@@ -277,22 +275,30 @@ require("lazy").setup({
         "nvim-tree/nvim-web-devicons",
         "nvim-telescope/telescope-symbols.nvim",
         "nvim-telescope/telescope-ui-select.nvim",
-        { "nvim-telescope/telescope-fzy-native.nvim", build = "make" },
+        { 'nvim-telescope/telescope-fzf-native.nvim', build = "make" },
       },
     },
     -- * Editing enhancements
     { "tpope/vim-repeat" },
     { "tpope/vim-surround" },
     { "tpope/vim-unimpaired" },
-    { "AndrewRadev/splitjoin.vim" },
+    {
+      "AndrewRadev/splitjoin.vim",
+      config = function()
+        vim.g.splitjoin_trailing_comma = true
+      end
+    },
     {
       "saghen/blink.cmp",
-      version = "*",
-      event = "InsertEnter",
+      version = "1.*",
       config = function() require("plugins.blinkcmp") end,
+      event = "InsertEnter",
     },
     -- * Editing UI/UX
-    { "j-hui/fidget.nvim", version = "v1.6.x", opts = {} },
+    {
+      "j-hui/fidget.nvim",
+      opts = {},
+    },
     {
       "karb94/neoscroll.nvim",
       opts = { easing = "sine" },
@@ -305,13 +311,11 @@ require("lazy").setup({
     },
     {
       "folke/todo-comments.nvim",
-      version = "v1.4.x",
       opts = {},
       dependencies = { "nvim-lua/plenary.nvim" },
     },
     {
       "lukas-reineke/indent-blankline.nvim",
-      version = "v3.8.x",
       main = "ibl",
       opts = {
         scope = { show_start = false, show_end = false },
@@ -328,13 +332,10 @@ require("lazy").setup({
       keys = {
         { "<leader>tc", ":TSContextToggle<CR>", desc = "Toggle TreeSitter context" },
       },
-      opts = { enable = false, mode = "topline" },
+      opts = { enable = false, mode = "cursor" },
     },
     {
       "SmiteshP/nvim-navic",
-      keys = {
-        { "<leader>tn" },
-      },
       config = function() require("plugins.navic") end,
       dependencies = {
         "neovim/nvim-lspconfig",
@@ -347,8 +348,18 @@ require("lazy").setup({
         "nvim-tree/nvim-web-devicons",
       },
     },
+    {
+      "catgoose/nvim-colorizer.lua",
+      event = "BufReadPre",
+      opts = {
+        filetypes = { "css" },
+        user_default_options = {
+          css = true,
+          virtualtext_inline = true,
+        },
+      },
+    },
     -- * VCS
-    { "tpope/vim-fugitive" },
     {
       "lewis6991/gitsigns.nvim",
       config = function() require("plugins.gitsigns") end,

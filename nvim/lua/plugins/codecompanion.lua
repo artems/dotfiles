@@ -1,8 +1,8 @@
 require("codecompanion").setup({
   strategies = {
-    cmd = { adapter = "custom_anthropic" },
-    chat = { adapter = "custom_anthropic" },
-    inline = { adapter = "custom_anthropic" },
+    cmd = { adapter = "custom_deepseek" },
+    chat = { adapter = "custom_deepseek" },
+    inline = { adapter = "custom_deepseek" },
   },
   adapters = {
     opts = {
@@ -21,13 +21,13 @@ require("codecompanion").setup({
     end,
     custom_deepseek = function()
       return require("codecompanion.adapters").extend("openai_compatible", {
-        url = "http://api.eliza.yandex.net/together/v1/chat/completions",
+        url = "https://api.eliza.yandex.net/raw/together/v1/chat/completions",
         env = {
           api_key = "SOY_TOKEN",
         },
         schema = {
           model = {
-            default = "deepseek-ai/deepseek-r1",
+            default = "deepseek-ai/deepseek-v3",
           },
         },
       })

@@ -22,7 +22,7 @@ gitsigns.setup({
       gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
     end, { buffer = bufnr,  desc = "Git stage hunk" })
     vim.keymap.set("v", "<leader>hr", function()
-      gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+      gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
     end, { buffer = bufnr, desc = "Git reset hunk" })
 
     vim.keymap.set("n", "<leader>hs", gitsigns.stage_hunk, { buffer = bufnr,  desc = "Git stage hunk" })

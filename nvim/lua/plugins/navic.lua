@@ -1,4 +1,5 @@
 local navic = require("nvim-navic")
+local devicons = require("nvim-web-devicons")
 
 navic.setup({
   lsp = { auto_attach = true },
@@ -6,48 +7,66 @@ navic.setup({
   highlight = true,
 })
 
-local function attach_navic()
-  local bufnr = vim.api.nvim_get_current_buf()
+_G.get_navic_winbar = function()
+  local path = vim.fn.expand('%:p:.')
+  local parts = {}
+  local components = {}
 
-  if navic.is_available(bufnr) then
-    return
+  for part in path:gmatch('[^/]+') do
+    table.insert(parts, part)
   end
 
-  local clients = vim.lsp.get_clients({ bufnr = bufnr })
-
-  if vim.tbl_isempty(clients) then
-    return
+  if #parts == 0 then
+    return '[No Name]'
   end
 
-  local client = clients[1]
-  navic.attach(client, bufnr)
+  for i, part in ipairs(parts) do
+    local icon, icon_hl, component
+
+    if i < #parts then
+      icon = ""
+      icon_hl = "DevIconDefault"
+    else
+      local extension = vim.fn.fnamemodify(part, ':e')
+      icon, icon_hl = devicons.get_icon(part, extension, { default = true })
+    end
+
+    if icon_hl then
+      component = string.format('%%#%s#%s%%* %s', icon_hl, icon, part)
+    else
+      component = icon .. ' ' .. part
+    end
+
+    table.insert(components, component)
+  end
+
+  local file_path = table.concat(components, '  ')
+  local navic_location = navic.get_location()
+
+  if navic_location ~= '' then
+    return file_path .. '  ' .. navic_location
+  end
+
+  return file_path
 end
 
-vim.api.nvim_create_augroup("vimrc_navic_setup", { clear = true })
+local enabled = true
 
-local enabled = false
-local function toggle_navic()
-  local bufnr = vim.api.nvim_get_current_buf()
-  enabled = not enabled
-
-  if enabled then
-    attach_navic()
-    vim.o.winbar = "%{%v:lua.require('nvim-navic').get_location()%}"
-
-    vim.api.nvim_create_autocmd("CursorHold", {
-      callback = function()
-        vim.cmd("redrawstatus")
-      end,
-      group = "vimrc_navic_setup",
-      buffer = bufnr,
-    })
+local function show_navic_if_enable()
+  if enabled and vim.bo.buftype == "" and vim.fn.expand('%') ~= '' then
+    vim.wo.winbar = "%{%v:lua.get_navic_winbar()%}"
   else
-    vim.o.winbar = nil
-    vim.api.nvim_clear_autocmds({
-      buffer = bufnr,
-      group = "vimrc_navic_setup",
-    })
+    vim.wo.winbar = nil
   end
 end
+
+local function toggle_navic()
+  enabled = not enabled
+  show_navic_if_enable()
+end
+
+vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
+  callback = show_navic_if_enable
+})
 
 vim.keymap.set('n', '<leader>tn', toggle_navic, { desc = "Toggle Navic", silent = true })

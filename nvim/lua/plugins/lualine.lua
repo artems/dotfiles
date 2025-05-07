@@ -6,9 +6,9 @@ local function location()
 end
 
 local format_symbols = {
-  unix = '',
   dos = '',
   mac = '',
+  unix = '',
 }
 
 local function file_encoding()
@@ -29,7 +29,14 @@ require("lualine").setup({
     always_show_tabline = false,
   },
   tabline = {
-    lualine_a = { { "tabs", mode = 1, show_modified_status = false } },
+    lualine_c = {
+      {
+        "tabs",
+        mode = 2,
+        max_length = vim.o.columns,
+        show_modified_status = false,
+      },
+    },
   },
   sections = {
     lualine_a = { "mode" },
