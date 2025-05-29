@@ -1,7 +1,4 @@
-local lspconfig = require("lspconfig")
-local capabilities = require("blink.cmp").get_lsp_capabilities({}, true)
-
-lspconfig.lua_ls.setup({
+vim.lsp.config('lua_ls', {
   on_init = function(client)
     if client.workspace_folders then
       local path = client.workspace_folders[1].name
@@ -17,7 +14,13 @@ lspconfig.lua_ls.setup({
       "force",
       client.config.settings.Lua,
       {
-        runtime = { version = "LuaJIT" },
+        runtime = {
+          version = "LuaJIT",
+          path = {
+            'lua/?.lua',
+            'lua/?/init.lua',
+          },
+        },
         -- Make the server aware of Neovim runtime files
         workspace = {
           library = {
@@ -33,27 +36,28 @@ lspconfig.lua_ls.setup({
   settings = { Lua = {} },
 })
 
-lspconfig.html.setup({ capabilities = capabilities })
-lspconfig.cssls.setup({ capabilities = capabilities })
-lspconfig.jsonls.setup({ capabilities = capabilities })
-
-lspconfig.ts_ls.setup({
-  capabilities = capabilities,
+vim.lsp.config('ts_ls', {
   init_options = { maxTsServerMemory = 8192 },
 })
-lspconfig.eslint.setup({ capabilities = capabilities })
-lspconfig.stylelint_lsp.setup({ capabilities = capabilities })
 
-lspconfig.hls.setup({ capabilities = capabilities })
-lspconfig.clangd.setup({ capabilities = capabilities })
-lspconfig.yamlls.setup({ capabilities = capabilities })
-lspconfig.pyright.setup({ capabilities = capabilities })
+vim.lsp.enable('html');
+vim.lsp.enable('cssls');
+vim.lsp.enable('jsonls');
+
+vim.lsp.enable('ts_ls');
+vim.lsp.enable('eslint');
+vim.lsp.enable('stylelint_lsp');
+
+vim.lsp.enable('hls');
+vim.lsp.enable('lua_ls');
+vim.lsp.enable('clangd');
+vim.lsp.enable('yamlls');
+vim.lsp.enable('pyright');
 
 vim.keymap.del("n", "grn")
 vim.keymap.del("n", "gra")
 vim.keymap.del("n", "grr")
 vim.keymap.del("n", "gri")
-vim.keymap.del("n", "gO")
 
 vim.diagnostic.config({
   signs = {
@@ -169,7 +173,7 @@ vim.api.nvim_create_augroup("vimrc_lspconfig_detach", { clear = true })
 vim.api.nvim_create_autocmd("LspDetach", {
   group = "vimrc_lspconfig_detach",
   callback = function(event)
-    vim.lsp.buf.clear_references()
     vim.api.nvim_clear_autocmds({ group = "vimrc_lsp_highlight", buffer = event.buf })
+    vim.lsp.buf.clear_references()
   end,
 })

@@ -111,7 +111,7 @@ vim.opt.undoreload = 10000                      -- Save the whole buffer for und
 vim.opt.isfname:append("@-@")                   -- Take "@" symbol into account when extracting filename
 
 vim.opt.ttimeout = true                         -- Timeout for key codes
-vim.opt.ttimeoutlen = 50                       -- Wait up to 50ms after <Esc> for special key
+vim.opt.ttimeoutlen = 50                        -- Wait up to 50ms after <Esc> for special key
 
 -- Spell checking
 vim.opt.spell = false                           -- Disable spell checking by default
@@ -146,7 +146,7 @@ end, { noremap = true, silent = true })
 
 -- Options for 'bufexplorer' -------------------------------------------------
 vim.g.bufExplorerSortBy = "mru"                   -- Sort buffers by most recently used
-vim.g.bufExplorerFindActive = false               -- Always open buffer in current window
+vim.g.bufExplorerFindActive = false               -- Allow duplicate buffer in split windows
 vim.g.bufExplorerShowTabBuffer = false            -- Show buffers from other tabs
 vim.g.bufExplorerShowDirectories = false          -- Do not show directories
 vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
@@ -191,8 +191,8 @@ if not vim.loop.fs_stat(lazypath) then
   local out = vim.fn.system({
     "git",
     "clone",
-    "--filter=blob:none",
     "--branch=stable",
+    "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     lazypath,
   })
@@ -242,16 +242,14 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      version = "v2.1.x",
+      version = "v2.2.x",
       config = function() require("plugins.lspconfig") end,
-      dependencies = {
-        "saghen/blink.cmp",
-      },
     },
     {
       "nvim-treesitter/nvim-treesitter",
-      version = "v0.9.x",
+      lazy = false,
       build = ":TSUpdate",
+      branch = "master",
       config = function() require("plugins.treesitter") end,
     },
     -- * Navigation
@@ -297,6 +295,7 @@ require("lazy").setup({
     -- * Editing UI/UX
     {
       "j-hui/fidget.nvim",
+      version = "1.*",
       opts = {},
     },
     {
@@ -355,6 +354,7 @@ require("lazy").setup({
         filetypes = { "css" },
         user_default_options = {
           css = true,
+          names = false,
           virtualtext_inline = true,
         },
       },

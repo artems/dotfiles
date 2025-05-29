@@ -12,18 +12,11 @@ require("blink.cmp").setup({
     ["<C-k>"] = {
       "show_documentation",
       "hide_documentation",
-      "show_signature",
-      "hide_signature",
     },
     ['<Tab>'] = { 'snippet_forward', 'fallback' },
     ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
   },
   cmdline = { enabled = false },
-  signature = {
-    enabled = true,
-    trigger = { enabled = false },
-    window = { show_documentation = false }
-  },
   completion = {
     menu = { auto_show = false, draw = { treesitter = { "lsp" } } },
     list = { selection = { preselect = false, auto_insert = true } },
@@ -32,6 +25,10 @@ require("blink.cmp").setup({
   },
   sources = {
     providers = {
+      lsp = {
+        -- show buffer completions with LSP
+        fallbacks = {},
+      },
       path = {
         opts = {
           trailing_slash = false,

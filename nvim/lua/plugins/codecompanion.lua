@@ -21,13 +21,13 @@ require("codecompanion").setup({
     end,
     custom_deepseek = function()
       return require("codecompanion.adapters").extend("openai_compatible", {
-        url = "https://api.eliza.yandex.net/raw/together/v1/chat/completions",
+        url = "http://deepseek-openai.yandex-team.ru/deepseek-v3/v1/chat/completions",
         env = {
           api_key = "SOY_TOKEN",
         },
         schema = {
           model = {
-            default = "deepseek-ai/deepseek-v3",
+            default = "deepseek-0324",
           },
         },
       })
