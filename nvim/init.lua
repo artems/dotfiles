@@ -93,8 +93,8 @@ vim.opt.wildignore:append(".svn")               --   Ignore subversion version c
 vim.opt.wildignore:append(".DS_Store")          --   Ignore macOS 'Desktop Services Store'
 
 vim.opt.completeopt = {}                        -- A list of options for Insert mode completion:
-vim.opt.completeopt:append("menuone")           --   Use a popup menu even when there is only one match
 vim.opt.completeopt:append("popup")             --   Show additional information in a popup window
+vim.opt.completeopt:append("menuone")           --   Use a popup menu even when there is only one match
 vim.opt.completeopt:append("noinsert")          --   Do not insert any text for a match
 vim.opt.completeopt:append("noselect")          --   Do not select a match in the menu
 
@@ -179,7 +179,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
   group = "vimrc_highlight_on_yank",
   callback = function()
-    vim.highlight.on_yank({ higroup = "IncSearch", timeout = 200 })
+    vim.hl.on_yank({ higroup = "IncSearch", timeout = 200 })
   end,
 })
 
@@ -242,14 +242,14 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      version = "v2.2.x",
+      version = "v2.4.x",
       config = function() require("plugins.lspconfig") end,
     },
     {
       "nvim-treesitter/nvim-treesitter",
       lazy = false,
       build = ":TSUpdate",
-      branch = "master",
+      branch = "main",
       config = function() require("plugins.treesitter") end,
     },
     -- * Navigation
@@ -284,6 +284,7 @@ require("lazy").setup({
       "AndrewRadev/splitjoin.vim",
       config = function()
         vim.g.splitjoin_trailing_comma = true
+        vim.g.splitjoin_html_attributes_bracket_on_new_line = true
       end
     },
     {
@@ -295,7 +296,6 @@ require("lazy").setup({
     -- * Editing UI/UX
     {
       "j-hui/fidget.nvim",
-      version = "1.*",
       opts = {},
     },
     {
@@ -307,6 +307,10 @@ require("lazy").setup({
         '<C-y>', '<C-e>',
         'zt', 'zz', 'zb',
       },
+    },
+    {
+      "lewis6991/satellite.nvim",
+      opts = {},
     },
     {
       "folke/todo-comments.nvim",
@@ -323,15 +327,14 @@ require("lazy").setup({
     },
     {
       "nvim-treesitter/nvim-treesitter-context",
-      cmd = {
-        "TSContextToggle",
-        "TSContextEnable",
-        "TSContextDisable",
-      },
+      cmd = { "TSContext" },
       keys = {
-        { "<leader>tc", ":TSContextToggle<CR>", desc = "Toggle TreeSitter context" },
+        { "<leader>tc", ":TSContext toggle<CR>", desc = "Toggle TreeSitter Context" },
       },
-      opts = { enable = false, mode = "cursor" },
+      opts = {
+        mode = "cursor",
+        separator = '-',
+      },
     },
     {
       "SmiteshP/nvim-navic",
@@ -351,7 +354,7 @@ require("lazy").setup({
       "catgoose/nvim-colorizer.lua",
       event = "BufReadPre",
       opts = {
-        filetypes = { "css" },
+        filetypes = { "css", "html" },
         user_default_options = {
           css = true,
           names = false,
@@ -376,7 +379,6 @@ require("lazy").setup({
       config = function() require("plugins.codecompanion") end,
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "nvim-treesitter/nvim-treesitter",
       },
     },
   },

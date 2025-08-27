@@ -10,11 +10,11 @@ require("codecompanion").setup({
     },
     custom_anthropic = function()
       return require("codecompanion.adapters").extend("anthropic", {
-        url = "http://api.eliza.yandex.net/anthropic/v1/messages",
+        url = "http://api.eliza.yandex.net/raw/anthropic/v1/messages",
         env = { api_key = "SOY_TOKEN" },
         schema = {
           model = {
-            default = "claude-3-7-sonnet-20250219",
+            default = "claude-sonnet-4-20250514",
           }
         }
       })

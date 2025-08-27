@@ -54,11 +54,6 @@ vim.lsp.enable('clangd');
 vim.lsp.enable('yamlls');
 vim.lsp.enable('pyright');
 
-vim.keymap.del("n", "grn")
-vim.keymap.del("n", "gra")
-vim.keymap.del("n", "grr")
-vim.keymap.del("n", "gri")
-
 vim.diagnostic.config({
   signs = {
     text = {
@@ -68,7 +63,8 @@ vim.diagnostic.config({
       [vim.diagnostic.severity.HINT] = "󰌶",
     },
   },
-  float = { border = "solid" }
+  float = { border = "rounded" },
+  underline = { severity = vim.diagnostic.severity.ERROR },
 })
 
 vim.api.nvim_create_augroup("vimrc_lspconfig_attach", { clear = true })
@@ -98,32 +94,32 @@ vim.api.nvim_create_autocmd("LspAttach", {
     end
 
     map('K', function()
-      vim.lsp.buf.hover({ border = "solid" })
+      vim.lsp.buf.hover({ border = "rounded" })
     end, "Show information about the symobl under the cursor")
 
     -- Jump to the definition of the word under cursor.
     map("gd", lazy_telescope("lsp_definitions"), "Goto definition")
 
     -- Find references for the word under your cursor.
-    map("gr", lazy_telescope("lsp_references"), "Goto references")
+    map("grr", lazy_telescope("lsp_references"), "Goto references")
 
     -- Jump to the implementation of the word under cursor.
-    map("gI", lazy_telescope("lsp_implementations"), "Goto implementation")
+    map("gri", lazy_telescope("lsp_implementations"), "Goto implementation")
 
     -- Jump to the type definition of the word under cursor.
-    map("gD", lazy_telescope("lsp_type_definitions"), "Goto type definition")
+    map("grt", lazy_telescope("lsp_type_definitions"), "Goto type definition")
 
     -- Fuzzy find all the symbols in your current document.
-    map("<leader>ds", lazy_telescope("lsp_document_symbols"), "Search document symbols")
+    map("gO", lazy_telescope("lsp_document_symbols"), "Search document symbols")
 
     -- Fuzzy find all the symbols in your current workspace.
-    map("<leader>ws", lazy_telescope("lsp_dynamic_workspace_symbols"), "Search workspace symbols")
+    map("gW", lazy_telescope("lsp_dynamic_workspace_symbols"), "Search workspace symbols")
 
     -- Rename the variable under cursor.
-    map("<leader>cr", vim.lsp.buf.rename, "Code action: Rename")
+    map("grn", vim.lsp.buf.rename, "Code action: Rename")
 
     -- Execute a code action
-    map("<leader>ca", vim.lsp.buf.code_action, "Code action: Choose", { "n", "x" })
+    map("gra", vim.lsp.buf.code_action, "Code action: Choose", { "n", "x" })
 
     -- This function resolves a difference between neovim version 0.11 and version 0.10
     local function client_supports_method(client, method, bufnr)
@@ -137,9 +133,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local client = vim.lsp.get_client_by_id(event.data.client_id)
 
     local documentHighlightAvailable = client and client_supports_method(
-      client,
-      vim.lsp.protocol.Methods.textDocument_documentHighlight,
-      event.buf
+      client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf
     )
     if documentHighlightAvailable then
       local highlight_augroup = vim.api.nvim_create_augroup("vimrc_lsp_highlight", { clear = false })
@@ -154,26 +148,24 @@ vim.api.nvim_create_autocmd("LspAttach", {
         buffer = event.buf,
         callback = vim.lsp.buf.clear_references,
       })
+
+      vim.api.nvim_create_augroup("vimrc_lspconfig_detach", { clear = true })
+      vim.api.nvim_create_autocmd("LspDetach", {
+        group = "vimrc_lspconfig_detach",
+        callback = function(event2)
+          vim.lsp.buf.clear_references()
+          vim.api.nvim_clear_autocmds({ group = "vimrc_lsp_highlight", buffer = event2.buf })
+        end,
+      })
     end
 
     local inlayHintAbailable = client and client_supports_method(
-      client,
-      vim.lsp.protocol.Methods.textDocument_inlayHint,
-      event.buf
+      client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf
     )
     if inlayHintAbailable then
       map("<leader>th", function()
         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
       end, "Toggle inlay hints")
     end
-  end,
-})
-
-vim.api.nvim_create_augroup("vimrc_lspconfig_detach", { clear = true })
-vim.api.nvim_create_autocmd("LspDetach", {
-  group = "vimrc_lspconfig_detach",
-  callback = function(event)
-    vim.api.nvim_clear_autocmds({ group = "vimrc_lsp_highlight", buffer = event.buf })
-    vim.lsp.buf.clear_references()
   end,
 })

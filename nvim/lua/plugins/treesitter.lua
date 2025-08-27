@@ -1,25 +1,22 @@
-local treesitter = require("nvim-treesitter.configs")
-
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 vim.opt.foldenable = true
 vim.opt.foldmethod = "expr"
 vim.opt.foldlevelstart = 99
 
-treesitter.setup({
-  indent = { enable = true },
-  highlight = { enable = true },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = false,
-      node_incremental = "<CR>",
-      node_decremental = "<BS>",
-      scope_incremental = false,
-    },
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = {
+    'c', 'cpp', 'bash',
+    'lua', 'luadoc', 'vim', 'vimdoc',
+    'diff', 'yaml', 'markdown', 'markdown_inline',
+    'html', 'css', 'javascript', 'typescript', 'typescriptreact',
   },
-  ensure_installed = {
-    "c", "cpp", "lua", "vim", "vimdoc", "markdown",
-    "html", "css", "javascript", "typescript", "tsx",
-    "bash", "haskell", "yaml",
-  },
+  callback = function()
+    -- syntax highlighting, provided by Neovim
+    vim.treesitter.start()
+
+    -- folds, provided by Neovim
+    vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+
+    -- indentation, provided by nvim-treesitter
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end,
 })
