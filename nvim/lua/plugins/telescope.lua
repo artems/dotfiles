@@ -68,8 +68,16 @@ require("telescope").setup({
       },
       n = {
         ["q"] = actions.close,
+        ["<CR>"] = multiopen_buf,
         ["<Esc>"] = actions.close,
+        ["<C-t>"] = multiopen_tab,
+        ["<C-s>"] = multiopen_split,
+        ["<C-v>"] = multiopen_vsplit,
         ["<C-c>"] = actions.close,
+        ["<C-j>"] = actions.move_selection_next,
+        ["<C-k>"] = actions.move_selection_previous,
+        ["<C-f>"] = actions.preview_scrolling_down,
+        ["<C-b>"] = actions.preview_scrolling_up,
         ["<C-h>"] = actions_layout.toggle_preview,
       }
     },
@@ -81,17 +89,24 @@ require("telescope").setup({
   pickers = {
     buffers = {
       sort_mru = true,
-      mappings = {
-        i = {
-          ["<C-d>"] = actions.delete_buffer,
-        }
-      }
-    }
+      attach_mappings = function(_, map)
+        map("n", "d", actions.delete_buffer, {
+          nowait = true,
+          silent = true,
+          noremap = true,
+        })
+        map("n", "<C-d>", actions.delete_buffer, { noremap = true, silent = true })
+        map("i", "<C-d>", actions.delete_buffer, { noremap = true, silent = true })
+
+        return true
+      end,
+      initial_mode = "normal",
+    },
   },
   extensions = {
     ["ui-select"] = {
       require("telescope.themes").get_dropdown(),
-    }
+    },
   },
 })
 
@@ -100,10 +115,9 @@ require("telescope").load_extension("ui-select")
 
 vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "Search files" })
 vim.keymap.set("n", "<leader>sr", builtin.oldfiles, { desc = "Open recent files" })
+vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "Search buffers" })
 vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "Grep in current directory" })
 vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "Search for word under cursor" })
-vim.keymap.set("n", "<leader>sb", builtin.buffers, { desc = "Search buffers" })
-vim.keymap.set("n", "<leader>se", builtin.symbols, { desc = "Search emoji" })
 vim.keymap.set("n", "<leader>ss", builtin.resume, { desc = "Resume last search" })
 vim.keymap.set("n", "<leader>s/", function()
   builtin.live_grep({

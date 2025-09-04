@@ -132,39 +132,6 @@ vim.keymap.set("x", "<C-j>", ":move '>+1<CR>gv=gv", { noremap = true })
 vim.keymap.set("x", "<C-k>", ":move '<-2<CR>gv=gv", { noremap = true })
 
 -- ===========================================================================
--- Options for 'netrw' -------------------------------------------------------
-vim.g.netrw_hide = 1                              -- Hide files that match the specified patterns
-vim.g.netrw_banner = false                        -- Hide the banner at the top of the Netrw window
-vim.g.netrw_altfile = true                        -- Preserve the alternate file when opening files in Netrw
-vim.g.netrw_list_hide = [[^\.\./$,^\./$]]         -- Hide (../) and (./) entries in Netrw
-
-vim.keymap.set("n", "-", function()
-  local filename = vim.fn.expand("%:t")
-  vim.cmd("Explore")
-  vim.fn.search("\\<" .. vim.fn.escape(filename, "\\") .. "\\>")
-end, { noremap = true, silent = true })
-
--- Options for 'bufexplorer' -------------------------------------------------
-vim.g.bufExplorerSortBy = "mru"                   -- Sort buffers by most recently used
-vim.g.bufExplorerFindActive = false               -- Allow duplicate buffer in split windows
-vim.g.bufExplorerShowTabBuffer = false            -- Show buffers from other tabs
-vim.g.bufExplorerShowDirectories = false          -- Do not show directories
-vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
-vim.g.bufExplorerSplitOutPathName = false         -- Do not split the filename and path
-vim.g.bufExplorerDisableDefaultKeyMapping = true  -- Disable default key mappings
-
-vim.api.nvim_create_augroup("vimrc_bufexplorer_setup", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-  desc = "Additional keymaps for bufexplorer",
-  group = "vimrc_bufexplorer_setup",
-  pattern = "bufexplorer",
-  callback = function()
-    vim.api.nvim_buf_set_keymap(0, "n", "?", "<F1>", { silent = true })
-    vim.api.nvim_buf_set_keymap(0, "n", "<Space>", "o", { silent = true })
-  end,
-})
-
--- ===========================================================================
 -- ! Misc
 if vim.fn.executable("rg") == 1 then
   vim.opt.grepprg = "rg --vimgrep"
@@ -226,11 +193,6 @@ require("lazy").setup({
       opts = { style = "night" },
     },
     {
-      "ellisonleao/gruvbox.nvim",
-      priority = 1000,
-      opts = { contrast = "hard" },
-    },
-    {
       "rebelot/kanagawa.nvim",
       priority = 1000,
       opts = { compile = true },
@@ -254,10 +216,46 @@ require("lazy").setup({
     },
     -- * Navigation
     {
-      "jlanzarotta/bufexplorer",
-      cmd = { "BufExplorer" },
+      "nvim-neo-tree/neo-tree.nvim",
+      lazy = false,
+      branch = "v3.x",
+      dependencies = {
+        "MunifTanjim/nui.nvim",
+        "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-web-devicons",
+      },
       keys = {
-        { "<Space>", ":BufExplorer<CR>", desc = "Open buffer list" },
+        { '-', ':Neotree reveal<CR>' },
+      },
+      opts = {
+        window = {
+          position = "float",
+          mappings = {
+            ["u"] = function(state)
+              local node = state.tree:get_node()
+              require("neo-tree.ui.renderer").focus_node(state, node:get_parent_id())
+            end
+          }
+        },
+        filesystem = {
+          filtered_items = {
+            visible = true,
+            show_hidden_count = false,
+          },
+          hijack_netrw_behavior = "open_current",
+        },
+        popup_border_style = "rounded",
+        default_component_configs = {
+          modified = {
+            symbol = "󰏫 "
+          },
+          git_status = {
+            symbols = {
+              staged = "",
+              unstaged = "",
+            },
+          },
+        },
       },
     },
     {
@@ -267,25 +265,31 @@ require("lazy").setup({
       keys = {
         { "<C-p>", ":Telescope find_files<CR>" },
         { "<C-n>", ":Telescope oldfiles<CR>" },
+        { "<C-h>", ":Telescope buffers<CR>" },
+        { "<Space>", ":Telescope buffers<CR>" },
       },
       dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons",
-        "nvim-telescope/telescope-symbols.nvim",
         "nvim-telescope/telescope-ui-select.nvim",
         { 'nvim-telescope/telescope-fzf-native.nvim', build = "make" },
       },
     },
     -- * Editing enhancements
-    { "tpope/vim-repeat" },
-    { "tpope/vim-surround" },
-    { "tpope/vim-unimpaired" },
     {
       "AndrewRadev/splitjoin.vim",
       config = function()
         vim.g.splitjoin_trailing_comma = true
         vim.g.splitjoin_html_attributes_bracket_on_new_line = true
       end
+    },
+    {
+      "kylechui/nvim-surround",
+      version = "^3.0.0",
+      event = "VeryLazy",
+      opts = {
+        move_cursor = "sticky"
+      },
     },
     {
       "saghen/blink.cmp",

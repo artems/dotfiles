@@ -2,7 +2,7 @@ local function location()
   local line = vim.fn.line('.')
   local column = vim.fn.charcol('.')
 
-  return " " .. string.format('%2d:%-3d', column, line)
+  return " " .. string.format('%2d:%-3d', column, line)
 end
 
 local format_symbols = {
@@ -29,12 +29,15 @@ require("lualine").setup({
     always_show_tabline = false,
   },
   tabline = {
-    lualine_c = {
+    lualine_a = {
       {
         "tabs",
         mode = 2,
         max_length = vim.o.columns,
         show_modified_status = false,
+        fmt = function(name)
+          return ' ' .. name
+        end
       },
     },
   },
