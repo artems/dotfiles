@@ -20,6 +20,18 @@ return {
   },
   picker = {
     enabled = true,
+    win = {
+      list = {
+        keys = {
+          ["<c-c>"] = { "close" },
+        },
+      },
+      input = {
+        keys = {
+          ["<c-c>"] = { "close", mode = { "n", "i" } },
+        },
+      },
+    },
     sources = {
       recent = {
         filter = {
@@ -35,9 +47,8 @@ return {
         win = {
           list = {
             keys = {
-              ["d"] = { "bufdelete" },
+              ["d"] = { "bufdelete", nowait = true },
               ["<c-d>"] = { "bufdelete" },
-              ["<c-c>"] = { "close", mode = { "n", "i" } },
             },
           },
           input = {

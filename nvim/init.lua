@@ -242,7 +242,9 @@ require("lazy").setup({
       "kylechui/nvim-surround",
       version = "^3.0.0",
       event = "VeryLazy",
-      config = function() require('plugins.surround') end,
+      opts = {
+        move_cursor = "sticky"
+      },
     },
     {
       "saghen/blink.cmp",
@@ -251,6 +253,10 @@ require("lazy").setup({
       event = "InsertEnter",
     },
     -- * Editing UI/UX
+    {
+      "j-hui/fidget.nvim",
+      opts = {},
+    },
     {
       "folke/todo-comments.nvim",
       opts = {},
