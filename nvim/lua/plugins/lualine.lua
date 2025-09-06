@@ -32,11 +32,11 @@ require("lualine").setup({
     lualine_a = {
       {
         "tabs",
-        mode = 2,
+        mode = 1,
         max_length = vim.o.columns,
         show_modified_status = false,
-        fmt = function(name)
-          return ' ' .. name
+        fmt = function(name, context)
+          return string.format('%s  %s', tostring(context.tabnr), name)
         end
       },
     },
@@ -47,6 +47,7 @@ require("lualine").setup({
     lualine_c = {
       {
         "filename",
+        path = 1,
         symbols = {
           modified = '󰏫',
           readonly = '󰌾',

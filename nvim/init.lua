@@ -44,10 +44,10 @@ vim.opt.formatoptions = formatoptions
 
 -- Search
 vim.opt.hlsearch = true                         -- Highlight all found matches
-vim.opt.incsearch = true                        -- Search the pattern while typing
 vim.opt.gdefault = false                        -- Turn off global substitution by default
-vim.opt.ignorecase = false                      -- Turn off ignoring case in search patterns by default
-vim.opt.smartcase = false                       -- Always turn off ignoring case in search patterns
+vim.opt.incsearch = true                        -- Search the pattern while typing
+vim.opt.smartcase = false                       -- Turn off ignoring case in search patterns
+vim.opt.ignorecase = false                      -- Turn off ignoring case in search patterns
 
 -- Appearance
 vim.opt.title = true                            -- Set the terminal title
@@ -73,6 +73,7 @@ vim.opt.splitbelow = true                       -- Put the new window below the 
 vim.opt.scrolljump = 1                          -- Minimal number of lines to scroll when the cursor gets off the screen
 vim.opt.scrolloff = 0                           -- Minimal number of screen lines to keep above and below the cursor
 vim.opt.sidescrolloff = 5                       -- Minimal number of columns to keep on the right and left of the edge of the screen
+vim.opt.smoothscroll = true                     -- Allow for partial scrolling of a wrapped line
 
 -- Diff options
 vim.opt.diffopt = {}                            -- Settings for diff mode:
@@ -146,7 +147,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
   group = "vimrc_highlight_on_yank",
   callback = function()
-    vim.hl.on_yank({ higroup = "IncSearch", timeout = 200 })
+    (vim.hl or vim.highlight).on_yank({ higroup = "IncSearch", timeout = 200 })
   end,
 })
 
@@ -186,6 +187,7 @@ require("lazy").setup({
       priority = 1000,
       name = "catppuccin",
       opts = { flavour = "mocha" },
+      init = function() vim.cmd("colorscheme catppuccin") end
     },
     {
       "folke/tokyonight.nvim",
@@ -196,10 +198,6 @@ require("lazy").setup({
       "rebelot/kanagawa.nvim",
       priority = 1000,
       opts = { compile = true },
-      config = function(_, opts)
-        require("kanagawa").setup(opts)
-        vim.cmd("colorscheme kanagawa")
-      end
     },
     -- * Languages tools
     {
@@ -216,64 +214,21 @@ require("lazy").setup({
     },
     -- * Navigation
     {
-      "nvim-neo-tree/neo-tree.nvim",
+      "folke/snacks.nvim",
+      priority = 1000,
       lazy = false,
-      branch = "v3.x",
-      dependencies = {
-        "MunifTanjim/nui.nvim",
-        "nvim-lua/plenary.nvim",
-        "nvim-tree/nvim-web-devicons",
-      },
+      opts = require('plugins.snacks-opts'),
       keys = {
-        { '-', ':Neotree reveal<CR>' },
+        { "-", function() require('snacks').explorer() end, desc = "File Explorer" },
+        { "]]", function() require('snacks').words.jump(vim.v.count1) end, desc = "Next Reference" },
+        { "[[", function() require('snacks').words.jump(-vim.v.count1) end, desc = "Prev Reference" },
+        { "<C-p>", function() require('snacks').picker.files() end, desc = "Find Files" },
+        { "<C-n>", function() require('snacks').picker.recent() end, desc = "Recent" },
+        { "<C-h>", function() require('snacks').picker.buffers() end, desc = "Buffers" },
+        { "<C-/>", function() require('snacks').picker.grep() end, desc = "Grep" },
+        { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
       },
-      opts = {
-        window = {
-          position = "float",
-          mappings = {
-            ["u"] = function(state)
-              local node = state.tree:get_node()
-              require("neo-tree.ui.renderer").focus_node(state, node:get_parent_id())
-            end
-          }
-        },
-        filesystem = {
-          filtered_items = {
-            visible = true,
-            show_hidden_count = false,
-          },
-          hijack_netrw_behavior = "open_current",
-        },
-        popup_border_style = "rounded",
-        default_component_configs = {
-          modified = {
-            symbol = "󰏫 "
-          },
-          git_status = {
-            symbols = {
-              staged = "",
-              unstaged = "",
-            },
-          },
-        },
-      },
-    },
-    {
-      "nvim-telescope/telescope.nvim",
-      config = function() require("plugins.telescope") end,
-      event = "VeryLazy",
-      keys = {
-        { "<C-p>", ":Telescope find_files<CR>" },
-        { "<C-n>", ":Telescope oldfiles<CR>" },
-        { "<C-h>", ":Telescope buffers<CR>" },
-        { "<Space>", ":Telescope buffers<CR>" },
-      },
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-        "nvim-tree/nvim-web-devicons",
-        "nvim-telescope/telescope-ui-select.nvim",
-        { 'nvim-telescope/telescope-fzf-native.nvim', build = "make" },
-      },
+      init = function() require('plugins.snacks-init') end,
     },
     -- * Editing enhancements
     {
@@ -287,9 +242,7 @@ require("lazy").setup({
       "kylechui/nvim-surround",
       version = "^3.0.0",
       event = "VeryLazy",
-      opts = {
-        move_cursor = "sticky"
-      },
+      config = function() require('plugins.surround') end,
     },
     {
       "saghen/blink.cmp",
@@ -299,46 +252,13 @@ require("lazy").setup({
     },
     -- * Editing UI/UX
     {
-      "j-hui/fidget.nvim",
-      opts = {},
-    },
-    {
-      "karb94/neoscroll.nvim",
-      opts = { easing = "sine" },
-      keys = {
-        '<C-u>', '<C-d>',
-        '<C-b>', '<C-f>',
-        '<C-y>', '<C-e>',
-        'zt', 'zz', 'zb',
-      },
-    },
-    {
-      "lewis6991/satellite.nvim",
-      opts = {},
-    },
-    {
       "folke/todo-comments.nvim",
       opts = {},
       dependencies = { "nvim-lua/plenary.nvim" },
     },
     {
-      "lukas-reineke/indent-blankline.nvim",
-      main = "ibl",
-      opts = {
-        scope = { show_start = false, show_end = false },
-        indent = { char = "┋" },
-      },
-    },
-    {
-      "nvim-treesitter/nvim-treesitter-context",
-      cmd = { "TSContext" },
-      keys = {
-        { "<leader>tc", ":TSContext toggle<CR>", desc = "Toggle TreeSitter Context" },
-      },
-      opts = {
-        mode = "cursor",
-        separator = '-',
-      },
+      "lewis6991/satellite.nvim",
+      opts = {},
     },
     {
       "SmiteshP/nvim-navic",
@@ -356,7 +276,6 @@ require("lazy").setup({
     },
     {
       "catgoose/nvim-colorizer.lua",
-      event = "BufReadPre",
       opts = {
         filetypes = { "css", "html" },
         user_default_options = {
