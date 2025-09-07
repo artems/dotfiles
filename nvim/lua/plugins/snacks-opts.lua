@@ -41,7 +41,8 @@ return {
         }
       },
       select = {
-        focus = "list"
+        focus = "list",
+        layout = { hidden = { "input" } },
       },
       buffers = {
         win = {
@@ -58,10 +59,15 @@ return {
           },
         },
         focus = "list",
-        sort_lastused = false,
+        sort_lastused = true,
       },
       explorer = {
-        layout = { preset = "dropdown" },
+        layout = {
+          preset = "dropdown",
+          layout = {
+            backdrop = true,
+          },
+        },
         auto_close = true
       },
     },

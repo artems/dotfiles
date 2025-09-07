@@ -29,6 +29,8 @@ vim.opt.display = {}                            -- Display settings:
 vim.opt.display:append("uhex")                  --   Show unprintable characters in hexadecimal as <xx>
 vim.opt.display:append("truncate")              --   Show "@@@" in the last screen line if the rest of the line
 
+vim.opt.foldtext = ""                           -- Display folded line with syntax highlighting
+
 -- Formatting
 vim.opt.textwidth = 78                          -- Maximum width of text when formatting
 
@@ -151,6 +153,26 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
+vim.api.nvim_create_augroup("vimrc_daily_colorscheme", { clear = true })
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = "vimrc_daily_colorscheme",
+  callback = function()
+    vim.schedule(function()
+      local allowed_colorschemes = {
+        "kanagawa",
+        "catppuccin",
+        "tokyonight",
+      }
+
+      math.randomseed(tonumber(os.date("%Y%m%d")) or 0)
+      local colorscheme_index = math.random(1, #allowed_colorschemes)
+      local selected_scheme = allowed_colorschemes[colorscheme_index]
+
+      vim.cmd("colorscheme " .. selected_scheme)
+    end)
+  end
+})
+
 -- ===========================================================================
 -- ! Bootstrap lazy.nvim -----------------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -187,7 +209,6 @@ require("lazy").setup({
       priority = 1000,
       name = "catppuccin",
       opts = { flavour = "mocha" },
-      init = function() vim.cmd("colorscheme catppuccin") end
     },
     {
       "folke/tokyonight.nvim",
@@ -197,7 +218,11 @@ require("lazy").setup({
     {
       "rebelot/kanagawa.nvim",
       priority = 1000,
-      opts = { compile = true },
+      opts = {
+        colors = {
+          theme = { all = { ui = { bg_gutter = "none" } } }
+        }
+      },
     },
     -- * Languages tools
     {
@@ -207,10 +232,26 @@ require("lazy").setup({
     },
     {
       "nvim-treesitter/nvim-treesitter",
-      lazy = false,
       build = ":TSUpdate",
       branch = "main",
       config = function() require("plugins.treesitter") end,
+      dependencies = {
+        "OXY2DEV/markview.nvim",
+      },
+    },
+    {
+      "OXY2DEV/markview.nvim",
+      lazy = false,
+      opts = {
+        preview = {
+          filetypes = { "markdown", "codecompanion" },
+          icon_provider = "devicons",
+          ignore_buftypes = {},
+        },
+        experimental = {
+          check_rtp = false,
+        },
+      },
     },
     -- * Navigation
     {
@@ -218,6 +259,7 @@ require("lazy").setup({
       priority = 1000,
       lazy = false,
       opts = require('plugins.snacks-opts'),
+      init = function() require('plugins.snacks-init') end,
       keys = {
         { "-", function() require('snacks').explorer() end, desc = "File Explorer" },
         { "]]", function() require('snacks').words.jump(vim.v.count1) end, desc = "Next Reference" },
@@ -228,7 +270,9 @@ require("lazy").setup({
         { "<C-/>", function() require('snacks').picker.grep() end, desc = "Grep" },
         { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
       },
-      init = function() require('plugins.snacks-init') end,
+      dependencies = {
+        "nvim-tree/nvim-web-devicons",
+      },
     },
     -- * Editing enhancements
     {
@@ -250,7 +294,7 @@ require("lazy").setup({
       "saghen/blink.cmp",
       version = "1.*",
       config = function() require("plugins.blinkcmp") end,
-      event = "InsertEnter",
+      event = "VeryLazy",
     },
     -- * Editing UI/UX
     {
@@ -271,6 +315,7 @@ require("lazy").setup({
       config = function() require("plugins.navic") end,
       dependencies = {
         "neovim/nvim-lspconfig",
+        "nvim-tree/nvim-web-devicons",
       },
     },
     {
@@ -308,6 +353,8 @@ require("lazy").setup({
       config = function() require("plugins.codecompanion") end,
       dependencies = {
         "nvim-lua/plenary.nvim",
+        "OXY2DEV/markview.nvim",
+        "nvim-treesitter/nvim-treesitter",
       },
     },
   },

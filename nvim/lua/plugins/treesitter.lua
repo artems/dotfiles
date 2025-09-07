@@ -1,6 +1,6 @@
-vim.opt.foldenable = false
+vim.opt.foldenable = true
 vim.opt.foldmethod = "expr"
-vim.opt.foldlevelstart = -1
+vim.opt.foldlevelstart = 10
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = {
