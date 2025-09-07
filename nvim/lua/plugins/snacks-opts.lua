@@ -1,6 +1,27 @@
 return {
   bigfile = {
     enabled = true,
+    setup = function(ctx)
+      vim.b[ctx.buf].snacks_indent = false
+      vim.b[ctx.buf].snacks_scroll = false
+
+      require('snacks').util.wo(0, {
+        wrap = false,
+        foldmethod = "manual",
+        statuscolumn = "",
+        conceallevel = 0,
+      })
+
+      if vim.fn.exists(":NoMatchParen") ~= 0 then
+        vim.cmd("NoMatchParen")
+      end
+
+      vim.schedule(function()
+        if vim.api.nvim_buf_is_valid(ctx.buf) then
+          vim.bo[ctx.buf].syntax = ctx.ft
+        end
+      end)
+    end,
   },
   dashboard = {
     enabled = true,
