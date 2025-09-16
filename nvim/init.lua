@@ -250,8 +250,9 @@ require("lazy").setup({
         { "<C-p>", function() require('snacks').picker.files() end, desc = "Find Files" },
         { "<C-n>", function() require('snacks').picker.recent() end, desc = "Recent" },
         { "<C-h>", function() require('snacks').picker.buffers() end, desc = "Buffers" },
-        { "<leader>g", function() require('snacks').picker.grep() end, desc = "Grep" },
-        { "<leader><leader>", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
+        { "<C-/>", function() require('snacks').picker.grep() end, desc = "Grep" },
+        { "<C-_>", function() require('snacks').picker.grep() end, desc = "Grep" },
+        { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
       },
       dependencies = {
         "nvim-tree/nvim-web-devicons",

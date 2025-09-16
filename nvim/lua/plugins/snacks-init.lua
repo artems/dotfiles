@@ -8,3 +8,11 @@ vim.api.nvim_create_autocmd("User", {
     snacks.toggle.option("spell", { name = "spelling" }):map("yoz")
   end,
 })
+
+vim.api.nvim_create_user_command('Gr', function(opts)
+  if opts.args == "" then
+    snacks.picker.grep()
+  else
+    snacks.picker.grep({ focus = "list", search = opts.args })
+  end
+end, { nargs = "*", desc = 'Search using Snacks.picker.grep()' })

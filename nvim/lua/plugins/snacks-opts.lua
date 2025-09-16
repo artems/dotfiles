@@ -56,6 +56,7 @@ return {
           ["I"] = { "toggle_ignored" },
           ["M"] = { "toggle_maximize" },
           ["P"] = { "toggle_preview" },
+          ["<c-c>"] = { "close" },
           ["<a-d>"] = false,
           ["<a-f>"] = false,
           ["<a-h>"] = false,
@@ -66,6 +67,7 @@ return {
       },
       input = {
         keys = {
+          ["/"] = { "toggle_focus", mode = { "n", "i" } },
           ["<c-c>"] = { "close", mode = { "n", "i" } },
           ["<a-d>"] = false,
           ["<a-f>"] = false,
@@ -107,6 +109,14 @@ return {
         sort_lastused = true,
       },
       explorer = {
+        win = {
+          list = {
+            keys = {
+              [ "<C-h>" ] = "tcd",
+              [ "<C-c>" ] = "close",
+            },
+          },
+        },
         layout = {
           preset = "dropdown",
           layout = {
