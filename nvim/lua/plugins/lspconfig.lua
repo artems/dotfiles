@@ -40,6 +40,10 @@ vim.lsp.config('ts_ls', {
   init_options = { maxTsServerMemory = 8192 },
 })
 
+vim.lsp.config('stylelint_lsp', {
+  filetypes = { "css", "less", "scss" }
+})
+
 vim.lsp.enable('html');
 vim.lsp.enable('cssls');
 vim.lsp.enable('jsonls');

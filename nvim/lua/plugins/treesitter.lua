@@ -6,8 +6,10 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = {
     'c', 'cpp', 'bash', 'diff',
     'lua', 'luadoc', 'vim', 'vimdoc',
-    'json', 'yaml', 'markdown', 'markdown_inline',
-    'html', 'css', 'javascript', 'typescript',
+    'html', 'css', 'json', 'yaml',
+    'markdown', 'markdown_inline',
+    'javascript', 'javascriptreact',
+    'typescript', 'typescriptreact',
   },
   callback = function()
     -- syntax highlighting, provided by Neovim

@@ -8,5 +8,3 @@ vim.api.nvim_create_autocmd("User", {
     snacks.toggle.option("spell", { name = "spelling" }):map("yoz")
   end,
 })
-
-vim.api.nvim_create_user_command("RenameFile", snacks.rename.rename_file, {})

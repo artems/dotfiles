@@ -32,6 +32,12 @@ return {
   indent = {
     enabled = true,
     animate = { enabled = false },
+    filter = function(buf)
+      return vim.g.snacks_indent ~= false and
+        vim.b[buf].snacks_indent ~= false and
+        vim.bo[buf].filetype ~= "markdown" and
+        vim.bo[buf].buftype == ""
+    end,
   },
   input = {
     enabled = true,
@@ -44,12 +50,29 @@ return {
     win = {
       list = {
         keys = {
-          ["<c-c>"] = { "close" },
+          ["D"] = { "inspect" },
+          ["F"] = { "toggle_follow" },
+          ["H"] = { "toggle_hidden" },
+          ["I"] = { "toggle_ignored" },
+          ["M"] = { "toggle_maximize" },
+          ["P"] = { "toggle_preview" },
+          ["<a-d>"] = false,
+          ["<a-f>"] = false,
+          ["<a-h>"] = false,
+          ["<a-i>"] = false,
+          ["<a-m>"] = false,
+          ["<a-p>"] = false,
         },
       },
       input = {
         keys = {
           ["<c-c>"] = { "close", mode = { "n", "i" } },
+          ["<a-d>"] = false,
+          ["<a-f>"] = false,
+          ["<a-h>"] = false,
+          ["<a-i>"] = false,
+          ["<a-m>"] = false,
+          ["<a-p>"] = false,
         },
       },
     },
@@ -70,6 +93,7 @@ return {
           list = {
             keys = {
               ["d"] = { "bufdelete", nowait = true },
+              ["dd"] = false,
               ["<c-d>"] = { "bufdelete" },
             },
           },

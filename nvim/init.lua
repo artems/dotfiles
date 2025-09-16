@@ -17,20 +17,6 @@ vim.opt.linebreak = true                        -- Don't break words
 vim.opt.showbreak = "↪ "                        -- Show "↪ " at the beginning of wrapped lines
 vim.opt.breakindent = true                      -- Visually indent each wrapped line with the same amount of space as the beginning of that line
 
-vim.opt.list = true                             -- Display unprintable characters
-vim.opt.listchars = {}                          -- Strings to use in "list" mode:
-vim.opt.listchars:append({ tab = "▸ " })        --   Characters to show for a tab
-vim.opt.listchars:append({ nbsp = "␣" })        --   Character to show for a non-breakable space
-vim.opt.listchars:append({ trail = "⋅" })       --   Character to show for trailing spaces
-vim.opt.listchars:append({ extends = "❯" })     --   Character to show in the last column
-vim.opt.listchars:append({ precedes = "❮" })    --   Character to show in the first visible column of the physical line
-
-vim.opt.display = {}                            -- Display settings:
-vim.opt.display:append("uhex")                  --   Show unprintable characters in hexadecimal as <xx>
-vim.opt.display:append("truncate")              --   Show "@@@" in the last screen line if the rest of the line
-
-vim.opt.foldtext = ""                           -- Display folded line with syntax highlighting
-
 -- Formatting
 vim.opt.textwidth = 78                          -- Maximum width of text when formatting
 
@@ -61,9 +47,23 @@ vim.opt.showmatch = false                       -- Don't jump to the matching br
 vim.opt.visualbell = true                       -- Use a visual bell instead of beeping
 vim.opt.cursorline = false                      -- Don't highlight the screen line of the cursor
 
+vim.opt.list = true                             -- Display unprintable characters
+vim.opt.listchars = {}                          -- Strings to use in "list" mode:
+vim.opt.listchars:append({ tab = "▸ " })        --   Characters to show for a tab
+vim.opt.listchars:append({ nbsp = "␣" })        --   Character to show for a non-breakable space
+vim.opt.listchars:append({ trail = "⋅" })       --   Character to show for trailing spaces
+vim.opt.listchars:append({ extends = "❯" })     --   Character to show in the last column
+vim.opt.listchars:append({ precedes = "❮" })    --   Character to show in the first visible column of the physical line
+
+vim.opt.display = {}                            -- Display settings:
+vim.opt.display:append("uhex")                  --   Show unprintable characters in hexadecimal as <xx>
+vim.opt.display:append("truncate")              --   Show "@@@" in the last screen line if the rest of the line
+
 vim.opt.signcolumn = "yes"                      -- Display signs
 vim.opt.laststatus = 3                          -- Always display a global statusline
 vim.opt.showtabline = 1                         -- Show tabs only if there are at least two tab pages
+
+vim.opt.foldtext = ""                           -- Display folded line with syntax highlighting
 
 -- Colors
 vim.opt.background = "dark"                     -- Set background to dark
@@ -164,8 +164,8 @@ vim.api.nvim_create_autocmd("VimEnter", {
         "tokyonight",
       }
 
-      math.randomseed(tonumber(os.date("%Y%m%d")) or 0)
-      local colorscheme_index = math.random(1, #allowed_colorschemes)
+      local yearday = os.date("*t").yday or 0
+      local colorscheme_index = (yearday % #allowed_colorschemes) + 1
       local selected_scheme = allowed_colorschemes[colorscheme_index]
 
       vim.cmd("colorscheme " .. selected_scheme)
@@ -235,23 +235,6 @@ require("lazy").setup({
       build = ":TSUpdate",
       branch = "main",
       config = function() require("plugins.treesitter") end,
-      dependencies = {
-        "OXY2DEV/markview.nvim",
-      },
-    },
-    {
-      "OXY2DEV/markview.nvim",
-      lazy = false,
-      opts = {
-        preview = {
-          filetypes = { "markdown", "codecompanion" },
-          icon_provider = "devicons",
-          ignore_buftypes = {},
-        },
-        experimental = {
-          check_rtp = false,
-        },
-      },
     },
     -- * Navigation
     {
@@ -267,8 +250,8 @@ require("lazy").setup({
         { "<C-p>", function() require('snacks').picker.files() end, desc = "Find Files" },
         { "<C-n>", function() require('snacks').picker.recent() end, desc = "Recent" },
         { "<C-h>", function() require('snacks').picker.buffers() end, desc = "Buffers" },
-        { "<C-/>", function() require('snacks').picker.grep() end, desc = "Grep" },
-        { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
+        { "<leader>g", function() require('snacks').picker.grep() end, desc = "Grep" },
+        { "<leader><leader>", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
       },
       dependencies = {
         "nvim-tree/nvim-web-devicons",
@@ -308,6 +291,7 @@ require("lazy").setup({
     },
     {
       "lewis6991/satellite.nvim",
+      commit = "1febb774fed40f923a9955e0d029601bd4cabc42",
       opts = {},
     },
     {
@@ -353,7 +337,6 @@ require("lazy").setup({
       config = function() require("plugins.codecompanion") end,
       dependencies = {
         "nvim-lua/plenary.nvim",
-        "OXY2DEV/markview.nvim",
         "nvim-treesitter/nvim-treesitter",
       },
     },
