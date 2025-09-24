@@ -31,7 +31,7 @@ require("blink.cmp").setup({
   appearance = { nerd_font_variant = "normal" },
   completion = {
     menu = { auto_show = false, draw = { treesitter = { "lsp" } } },
-    list = { selection = { preselect = true, auto_insert = false } },
+    list = { selection = { preselect = true, auto_insert = true } },
     accept = { auto_brackets = { enabled = false } },
     trigger = { show_on_keyword = true },
     keyword = { range = "prefix" },

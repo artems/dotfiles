@@ -72,10 +72,10 @@ vim.cmd("colorscheme retrobox")                 -- Apply the retrobox colorschem
 -- Windows
 vim.opt.splitright = true                       -- Put the new window right of the current one
 vim.opt.splitbelow = true                       -- Put the new window below the current one
-vim.opt.scrolljump = 1                          -- Minimal number of lines to scroll when the cursor gets off the screen
+vim.opt.smoothscroll = true                     -- Allow for partial scrolling of a wrapped line
+vim.opt.scrolljump = 1                          -- Number of lines to scroll when the cursor gets off the screen
 vim.opt.scrolloff = 0                           -- Minimal number of screen lines to keep above and below the cursor
 vim.opt.sidescrolloff = 5                       -- Minimal number of columns to keep on the right and left of the edge of the screen
-vim.opt.smoothscroll = true                     -- Allow for partial scrolling of a wrapped line
 
 -- Diff options
 vim.opt.diffopt = {}                            -- Settings for diff mode:
@@ -164,8 +164,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
         "tokyonight",
       }
 
-      local yearday = os.date("*t").yday or 0
-      local colorscheme_index = (yearday % #allowed_colorschemes) + 1
+      local timestamp = os.time()
+      local num_of_week = math.floor(timestamp / 604800)
+      local colorscheme_index = num_of_week % #allowed_colorschemes + 1
       local selected_scheme = allowed_colorschemes[colorscheme_index]
 
       vim.cmd("colorscheme " .. selected_scheme)
@@ -227,7 +228,7 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      version = "v2.4.x",
+      version = "v2.5.x",
       config = function() require("plugins.lspconfig") end,
     },
     {
@@ -292,7 +293,6 @@ require("lazy").setup({
     },
     {
       "lewis6991/satellite.nvim",
-      commit = "1febb774fed40f923a9955e0d029601bd4cabc42",
       opts = {},
     },
     {
