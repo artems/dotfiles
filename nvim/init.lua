@@ -1,10 +1,10 @@
 -- ===========================================================================
 -- ! General preferences -----------------------------------------------------
-vim.opt.mouse = ""                              -- Disable mouse in all modes
+vim.opt.mouse = ""                              -- Disable mouse support in all modes
 vim.opt.encoding = "utf-8"                      -- Set character encoding used inside Neovim
 
 -- ! Edit options ------------------------------------------------------------
-vim.opt.smarttab = true                         -- Use "shiftwidth" for <Tab> in front of a line instead of "softtabstop"
+vim.opt.smarttab = true                         -- Use "shiftwidth" when inserting <Tab> at the beginning of a line
 vim.opt.expandtab = true                        -- Use spaces to insert a <Tab>
 vim.opt.autoindent = true                       -- Copy indent from current line when starting a new line
 vim.opt.smartindent = true                      -- Indent after "{" character or keywords
@@ -15,7 +15,7 @@ vim.opt.softtabstop = 4                         -- Number of spaces to use for <
 vim.opt.wrap = true                             -- Wrap long lines
 vim.opt.linebreak = true                        -- Don't break words
 vim.opt.showbreak = "↪ "                        -- Show "↪ " at the beginning of wrapped lines
-vim.opt.breakindent = true                      -- Visually indent each wrapped line with the same amount of space as the beginning of that line
+vim.opt.breakindent = true                      -- Preserve indentation in wrapped lines
 
 -- Formatting
 vim.opt.textwidth = 78                          -- Maximum width of text when formatting
@@ -57,7 +57,7 @@ vim.opt.listchars:append({ precedes = "❮" })    --   Character to show in the 
 
 vim.opt.display = {}                            -- Display settings:
 vim.opt.display:append("uhex")                  --   Show unprintable characters in hexadecimal as <xx>
-vim.opt.display:append("truncate")              --   Show "@@@" in the last screen line if the rest of the line
+vim.opt.display:append("truncate")              --   Show "@@@" in the last screen line when the text doesn't fit
 
 vim.opt.signcolumn = "yes"                      -- Display signs
 vim.opt.laststatus = 3                          -- Always display a global statusline
@@ -107,18 +107,18 @@ vim.opt.swapfile = false                        -- Disable swap files
 vim.opt.undofile = true                         -- Enable persistent undo
 
 vim.opt.hidden = true                           -- Allow editing several buffers at the same time
-vim.opt.history = 1000                          -- Number of entries about last ":" commands or search patterns
+vim.opt.history = 1000                          -- Maximum number of ":" commands and search patterns to remember
 vim.opt.undolevels = 1000                       -- Maximum number of changes that can be undone
 vim.opt.undoreload = 10000                      -- Save the whole buffer for undo when reloading it
 
-vim.opt.isfname:append("@-@")                   -- Take "@" symbol into account when extracting filename
+vim.opt.isfname:append("@-@")                   -- Include "@" symbol as part of filenames
 
 vim.opt.ttimeout = true                         -- Timeout for key codes
 vim.opt.ttimeoutlen = 50                        -- Wait up to 50ms after <Esc> for special key
 
 -- Spell checking
 vim.opt.spell = false                           -- Disable spell checking by default
-vim.opt.spelllang = { "en", "ru" }              -- A list of word list names
+vim.opt.spelllang = { "en", "ru" }              -- Languages for spell checking
 
 -- Performance
 vim.opt.synmaxcol = 1000                        -- Maximal column in which to search for syntax items
@@ -126,24 +126,19 @@ vim.opt.updatetime = 300                        -- Emit 'CursorHold' event after
 
 -- ===========================================================================
 -- ! Key mappings
-vim.keymap.set("n", "Q", "<Nop>")
+vim.keymap.set("n", "Q", "<Nop>")               -- Disable Ex mode (Q)
 
 -- Move lines up and down
-vim.keymap.set("n", "<M-Down>", ":move .+1<CR>==", { noremap = true })
-vim.keymap.set("n", "<M-Up>", ":move .-2<CR>==", { noremap = true })
-vim.keymap.set("x", "<M-Down>", ":move '>+1<CR>gv=gv", { noremap = true })
-vim.keymap.set("x", "<M-Up>", ":move '<-2<CR>gv=gv", { noremap = true })
+vim.keymap.set("n", "<C-j>", ":move .+1<CR>==", { noremap = true })
+vim.keymap.set("n", "<C-k>", ":move .-2<CR>==", { noremap = true })
+vim.keymap.set("x", "<C-j>", ":move '>+1<CR>gv=gv", { noremap = true })
+vim.keymap.set("x", "<C-k>", ":move '<-2<CR>gv=gv", { noremap = true })
 
 -- Movement between windows
-vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true })
-
-vim.keymap.set("t", "<C-h>", "<CMD>wincmd h<CR>", { noremap = true })
-vim.keymap.set("t", "<C-j>", "<CMD>wincmd j<CR>", { noremap = true })
-vim.keymap.set("t", "<C-k>", "<CMD>wincmd k<CR>", { noremap = true })
-vim.keymap.set("t", "<C-l>", "<CMD>wincmd l<CR>", { noremap = true })
+vim.keymap.set("t", "<C-w>h", "<CMD>wincmd h<CR>", { noremap = true })
+vim.keymap.set("t", "<C-w>j", "<CMD>wincmd j<CR>", { noremap = true })
+vim.keymap.set("t", "<C-w>k", "<CMD>wincmd k<CR>", { noremap = true })
+vim.keymap.set("t", "<C-w>l", "<CMD>wincmd l<CR>", { noremap = true })
 
 -- Keep selection while indenting
 vim.keymap.set("v", "<", "<gv", { noremap = true })
@@ -151,7 +146,7 @@ vim.keymap.set("v", ">", ">gv", { noremap = true })
 
 -- ===========================================================================
 -- Options for 'bufexplorer' -------------------------------------------------
-vim.g.bufExplorerSortBy = "mru"                   -- Sort buffers by most recently used
+vim.g.bufExplorerSortBy = "mru"                   -- Sort buffers by most recently used (MRU)
 vim.g.bufExplorerFindActive = false               -- Allow duplicate buffer in split windows
 vim.g.bufExplorerShowTabBuffer = false            -- Show buffers from other tabs
 vim.g.bufExplorerShowDirectories = false          -- Do not show directories
@@ -159,6 +154,7 @@ vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
 vim.g.bufExplorerSplitOutPathName = false         -- Do not split the filename and path
 vim.g.bufExplorerDisableDefaultKeyMapping = true  -- Disable default key mappings
 
+-- Setup additional keymaps for bufexplorer filetype
 vim.api.nvim_create_augroup("vimrc_bufexplorer_setup", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   desc = "Additional keymaps for bufexplorer",
@@ -295,7 +291,7 @@ require("lazy").setup({
         { "[[", function() require('snacks').words.jump(-vim.v.count1) end, desc = "Prev Reference" },
         { "<C-p>", function() require('snacks').picker.files() end, desc = "Find Files" },
         { "<C-n>", function() require('snacks').picker.recent() end, desc = "Recent" },
-        { "<C-/>", function() require('snacks').picker.grep() end, desc = "Grep" },
+        { "<C-h>", function() require('snacks').picker.grep() end, desc = "Grep" },
         { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
       },
       dependencies = {
@@ -389,21 +385,17 @@ require("lazy").setup({
         "ClaudeCodeSelectModel",
       },
       keys = {
-        { "<leader>aa", ":ClaudeCode<CR>", desc = "Toggle Claude" },
-        { "<leader>af", ":ClaudeCodeFocus<CR>", desc = "Focus Claude" },
-        { "<leader>ar", ":ClaudeCode --resume<CR>", desc = "Resume Claude" },
-        { "<leader>ac", ":ClaudeCode --continue<CR>", desc = "Continue Claude" },
-        { "<leader>am", ":ClaudeCodeSelectModel<CR>", desc = "Select Claude model" },
-        { "<leader>ab", ":ClaudeCodeAdd %<CR>", desc = "Add current buffer" },
-        { "<leader>as", ":ClaudeCodeSend<CR>", mode = "v", desc = "Send to Claude" },
-        {
-          "<leader>as",
-          ":ClaudeCodeTreeAdd<CR>",
-          desc = "Add file",
-          ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
+        { "<C-,>", ":ClaudeCodeFocus<CR>", desc = "Focus Claude" },
+      },
+      opts = {
+        terminal = {
+          snacks_win_opts = {
+            keys = {
+              claude_hide = { "<C-,>", function(self) self:hide() end, mode = "t", desc = "Hide (Ctrl+,)" },
+            },
+          },
         },
       },
-      config = true,
       dependencies = { "folke/snacks.nvim" },
     }
   },

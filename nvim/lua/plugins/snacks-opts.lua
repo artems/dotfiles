@@ -126,6 +126,8 @@ return {
             backdrop = true,
           },
         },
+        hidden = true,
+        ignored = true,
         auto_close = true
       },
     },
@@ -146,9 +148,11 @@ return {
   statuscolumn = { enabled = true },
   terminal = {
     enabled = true,
+    keys = {
+      term_normal = false,
+    },
     win = {
-      width = 0.5,
-      position = "right",
+      height = 0.45,
     },
   },
   words = { enabled = true },
