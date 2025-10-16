@@ -129,10 +129,46 @@ vim.opt.updatetime = 300                        -- Emit 'CursorHold' event after
 vim.keymap.set("n", "Q", "<Nop>")
 
 -- Move lines up and down
-vim.keymap.set("n", "<C-j>", ":move .+1<CR>==", { noremap = true })
-vim.keymap.set("n", "<C-k>", ":move .-2<CR>==", { noremap = true })
-vim.keymap.set("x", "<C-j>", ":move '>+1<CR>gv=gv", { noremap = true })
-vim.keymap.set("x", "<C-k>", ":move '<-2<CR>gv=gv", { noremap = true })
+vim.keymap.set("n", "<M-Down>", ":move .+1<CR>==", { noremap = true })
+vim.keymap.set("n", "<M-Up>", ":move .-2<CR>==", { noremap = true })
+vim.keymap.set("x", "<M-Down>", ":move '>+1<CR>gv=gv", { noremap = true })
+vim.keymap.set("x", "<M-Up>", ":move '<-2<CR>gv=gv", { noremap = true })
+
+-- Movement between windows
+vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true })
+
+vim.keymap.set("t", "<C-h>", "<CMD>wincmd h<CR>", { noremap = true })
+vim.keymap.set("t", "<C-j>", "<CMD>wincmd j<CR>", { noremap = true })
+vim.keymap.set("t", "<C-k>", "<CMD>wincmd k<CR>", { noremap = true })
+vim.keymap.set("t", "<C-l>", "<CMD>wincmd l<CR>", { noremap = true })
+
+-- Keep selection while indenting
+vim.keymap.set("v", "<", "<gv", { noremap = true })
+vim.keymap.set("v", ">", ">gv", { noremap = true })
+
+-- ===========================================================================
+-- Options for 'bufexplorer' -------------------------------------------------
+vim.g.bufExplorerSortBy = "mru"                   -- Sort buffers by most recently used
+vim.g.bufExplorerFindActive = false               -- Allow duplicate buffer in split windows
+vim.g.bufExplorerShowTabBuffer = false            -- Show buffers from other tabs
+vim.g.bufExplorerShowDirectories = false          -- Do not show directories
+vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
+vim.g.bufExplorerSplitOutPathName = false         -- Do not split the filename and path
+vim.g.bufExplorerDisableDefaultKeyMapping = true  -- Disable default key mappings
+
+vim.api.nvim_create_augroup("vimrc_bufexplorer_setup", { clear = true })
+vim.api.nvim_create_autocmd("FileType", {
+  desc = "Additional keymaps for bufexplorer",
+  group = "vimrc_bufexplorer_setup",
+  pattern = "bufexplorer",
+  callback = function()
+    vim.api.nvim_buf_set_keymap(0, "n", "?", "<F1>", { silent = true })
+    vim.api.nvim_buf_set_keymap(0, "n", "<Space>", "o", { silent = true })
+  end,
+})
 
 -- ===========================================================================
 -- ! Misc
@@ -144,6 +180,7 @@ elseif vim.fn.executable("grep") == 1 then
   vim.opt.grepprg = "grep -n"
 end
 
+-- Highlight yanked text briefly for visual feedback
 vim.api.nvim_create_augroup("vimrc_highlight_on_yank", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
@@ -153,6 +190,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
+-- Automatically rotate colorschemes on a weekly basis
 vim.api.nvim_create_augroup("vimrc_daily_colorscheme", { clear = true })
 vim.api.nvim_create_autocmd("VimEnter", {
   group = "vimrc_daily_colorscheme",
@@ -164,7 +202,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
         "tokyonight",
       }
 
-      local timestamp = os.time()
+      local timestamp = os.time() + 259200 -- shift to monday
       local num_of_week = math.floor(timestamp / 604800)
       local colorscheme_index = num_of_week % #allowed_colorschemes + 1
       local selected_scheme = allowed_colorschemes[colorscheme_index]
@@ -239,6 +277,13 @@ require("lazy").setup({
     },
     -- * Navigation
     {
+      "jlanzarotta/bufexplorer",
+      cmd = { "BufExplorer" },
+      keys = {
+        { "<Space>", ":BufExplorer<CR>", desc = "Open buffer list" },
+      },
+    },
+    {
       "folke/snacks.nvim",
       priority = 1000,
       lazy = false,
@@ -250,9 +295,7 @@ require("lazy").setup({
         { "[[", function() require('snacks').words.jump(-vim.v.count1) end, desc = "Prev Reference" },
         { "<C-p>", function() require('snacks').picker.files() end, desc = "Find Files" },
         { "<C-n>", function() require('snacks').picker.recent() end, desc = "Recent" },
-        { "<C-h>", function() require('snacks').picker.buffers() end, desc = "Buffers" },
         { "<C-/>", function() require('snacks').picker.grep() end, desc = "Grep" },
-        { "<C-_>", function() require('snacks').picker.grep() end, desc = "Grep" },
         { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
       },
       dependencies = {
@@ -311,6 +354,17 @@ require("lazy").setup({
       },
     },
     {
+      "nvim-treesitter/nvim-treesitter-context",
+      cmd = { "TSContext" },
+      lazy = false,
+      keys = {
+        { "<leader>tc", ":TSContext toggle<CR>", desc = "Toggle TreeSitter Context" },
+      },
+      opts = {
+        mode = "cursor",
+      },
+    },
+    {
       "catgoose/nvim-colorizer.lua",
       opts = {
         filetypes = { "css", "html" },
@@ -328,18 +382,29 @@ require("lazy").setup({
     },
     -- * AI
     {
-      "olimorris/codecompanion.nvim",
+      "coder/claudecode.nvim",
       cmd = {
-        "CodeCompanion",
-        "CodeCompanionCmd",
-        "CodeCompanionChat",
-        "CodeCompanionActions",
+        "ClaudeCode",
+        "ClaudeCodeFocus",
+        "ClaudeCodeSelectModel",
       },
-      config = function() require("plugins.codecompanion") end,
-      dependencies = {
-        "nvim-lua/plenary.nvim",
-        "nvim-treesitter/nvim-treesitter",
+      keys = {
+        { "<leader>aa", ":ClaudeCode<CR>", desc = "Toggle Claude" },
+        { "<leader>af", ":ClaudeCodeFocus<CR>", desc = "Focus Claude" },
+        { "<leader>ar", ":ClaudeCode --resume<CR>", desc = "Resume Claude" },
+        { "<leader>ac", ":ClaudeCode --continue<CR>", desc = "Continue Claude" },
+        { "<leader>am", ":ClaudeCodeSelectModel<CR>", desc = "Select Claude model" },
+        { "<leader>ab", ":ClaudeCodeAdd %<CR>", desc = "Add current buffer" },
+        { "<leader>as", ":ClaudeCodeSend<CR>", mode = "v", desc = "Send to Claude" },
+        {
+          "<leader>as",
+          ":ClaudeCodeTreeAdd<CR>",
+          desc = "Add file",
+          ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
+        },
       },
-    },
+      config = true,
+      dependencies = { "folke/snacks.nvim" },
+    }
   },
 })

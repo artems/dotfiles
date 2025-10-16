@@ -2,5 +2,9 @@
     tool = vimdiff
     renames = true
 
+[alias]
+    ll = log -n10 --oneline
+    amend = commit --amend --no-edit
+
 [branch "trunk"]
     allowCommit = false

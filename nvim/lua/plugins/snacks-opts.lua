@@ -23,6 +23,9 @@ return {
       end)
     end,
   },
+  bufdelete = {
+    enabled = true,
+  },
   dashboard = {
     enabled = true,
   },
@@ -141,6 +144,12 @@ return {
     },
   },
   statuscolumn = { enabled = true },
-  terminal = { enabled = true },
+  terminal = {
+    enabled = true,
+    win = {
+      width = 0.5,
+      position = "right",
+    },
+  },
   words = { enabled = true },
 }
