@@ -1,6 +1,8 @@
 return {
   bigfile = {
     enabled = true,
+    size = 1024 * 1024, -- 1MB
+    line_length = 1024,
     setup = function(ctx)
       vim.b[ctx.buf].snacks_indent = false
       vim.b[ctx.buf].snacks_scroll = false
@@ -16,9 +18,16 @@ return {
         vim.cmd("NoMatchParen")
       end
 
+      -- Disable LSP for large files
       vim.schedule(function()
         if vim.api.nvim_buf_is_valid(ctx.buf) then
           vim.bo[ctx.buf].syntax = ctx.ft
+
+          -- Detach all LSP clients from this buffer
+          local clients = vim.lsp.get_clients({ bufnr = ctx.buf })
+          for _, client in ipairs(clients) do
+            vim.lsp.buf_detach_client(ctx.buf, client.id)
+          end
         end
       end)
     end,
@@ -91,7 +100,6 @@ return {
       },
       select = {
         focus = "list",
-        layout = { hidden = { "input" } },
       },
       buffers = {
         win = {
@@ -148,12 +156,8 @@ return {
   statuscolumn = { enabled = true },
   terminal = {
     enabled = true,
-    keys = {
-      term_normal = false,
-    },
-    win = {
-      height = 0.45,
-    },
+    auto_insert = false,
+    win = { height = 0.5 },
   },
   words = { enabled = true },
 }

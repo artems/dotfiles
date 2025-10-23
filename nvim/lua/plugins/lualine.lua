@@ -1,14 +1,16 @@
-local function location()
-  local line = vim.fn.line('.')
-  local column = vim.fn.charcol('.')
+local devicons = require("nvim-web-devicons")
 
-  return " " .. string.format('%2d:%-3d', column, line)
+local function location()
+  local line = vim.fn.line(".")
+  local column = vim.fn.charcol(".")
+
+  return " " .. string.format("%2d:%-3d", column, line)
 end
 
 local format_symbols = {
-  dos = '',
-  mac = '',
-  unix = '',
+  dos = "",
+  mac = "",
+  unix = "",
 }
 
 local function file_encoding()
@@ -23,10 +25,23 @@ local function encoding_not_utf_8()
   return format ~= "unix" or (encoding ~= "utf-8" and encoding ~= "")
 end
 
+local function tab_format(name, context)
+  local extension = vim.fn.fnamemodify(name, ":e")
+  local icon = devicons.get_icon(name, extension, { default = true })
+
+  return tostring(context.tabnr) .. ": " .. icon .. " " .. name
+end
+
 require("lualine").setup({
   options = {
-    globalstatus = true,
-    always_show_tabline = false,
+    globalstatus = vim.o.laststatus == 3,
+    always_show_tabline = vim.o.showtabline == 2,
+    disabled_filetypes = {
+      statusline = {
+        "dashboard",
+        "snacks_dashboard",
+      },
+    },
   },
   tabline = {
     lualine_a = {
@@ -35,9 +50,7 @@ require("lualine").setup({
         mode = 1,
         max_length = vim.o.columns,
         show_modified_status = false,
-        fmt = function(name, context)
-          return string.format('%s  %s', tostring(context.tabnr), name)
-        end
+        fmt = tab_format,
       },
     },
   },
@@ -49,10 +62,10 @@ require("lualine").setup({
         "filename",
         path = 0,
         symbols = {
-          modified = '󰏫',
-          readonly = '󰌾',
-          unnamed = '[No Name]',
-          newfile = '[New file]',
+          modified = "󰏫",
+          readonly = "󰌾",
+          unnamed = "[No Name]",
+          newfile = "[New file]",
         },
       },
     },

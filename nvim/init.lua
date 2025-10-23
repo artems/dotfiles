@@ -107,22 +107,22 @@ vim.opt.swapfile = false                        -- Disable swap files
 vim.opt.undofile = true                         -- Enable persistent undo
 
 vim.opt.hidden = true                           -- Allow editing several buffers at the same time
-vim.opt.history = 1000                          -- Maximum number of ":" commands and search patterns to remember
-vim.opt.undolevels = 1000                       -- Maximum number of changes that can be undone
-vim.opt.undoreload = 10000                      -- Save the whole buffer for undo when reloading it
+vim.opt.history = 1024                          -- Maximum number of ":" commands and search patterns to remember
+vim.opt.undolevels = 1024                       -- Maximum number of changes that can be undone
+vim.opt.undoreload = 8192                       -- Save the whole buffer for undo when reloading it
 
 vim.opt.isfname:append("@-@")                   -- Include "@" symbol as part of filenames
 
 vim.opt.ttimeout = true                         -- Timeout for key codes
-vim.opt.ttimeoutlen = 50                        -- Wait up to 50ms after <Esc> for special key
+vim.opt.ttimeoutlen = 100                       -- Wait up to 100ms after <Esc> for special key
 
 -- Spell checking
 vim.opt.spell = false                           -- Disable spell checking by default
 vim.opt.spelllang = { "en", "ru" }              -- Languages for spell checking
 
 -- Performance
-vim.opt.synmaxcol = 1000                        -- Maximal column in which to search for syntax items
-vim.opt.updatetime = 300                        -- Emit 'CursorHold' event after 300ms
+vim.opt.synmaxcol = 1024                        -- Maximal column in which to search for syntax items
+vim.opt.updatetime = 250                        -- Emit 'CursorHold' event after 250ms
 
 -- ===========================================================================
 -- ! Key mappings
@@ -248,7 +248,7 @@ require("lazy").setup({
     {
       "folke/tokyonight.nvim",
       priority = 1000,
-      opts = { style = "night" },
+      opts = { style = "moon" },
     },
     {
       "rebelot/kanagawa.nvim",
@@ -358,6 +358,8 @@ require("lazy").setup({
       },
       opts = {
         mode = "cursor",
+        max_lines = 5,
+        multiline_threshold = 1,
       },
     },
     {
@@ -388,12 +390,19 @@ require("lazy").setup({
         { "<C-,>", ":ClaudeCodeFocus<CR>", desc = "Focus Claude" },
       },
       opts = {
+        diff_opts = {
+          open_in_new_tab = true,
+          hide_terminal_in_new_tab = true,
+        },
         terminal = {
           snacks_win_opts = {
             keys = {
-              claude_hide = { "<C-,>", function(self) self:hide() end, mode = "t", desc = "Hide (Ctrl+,)" },
+              term_normal = false,
+              claude_hide = { "<C-,>", function(self) self:hide() end, mode = "t", desc = "Hide Calude" },
             },
+            width = 0.5,
           },
+          split_width_percentage = 0.5,
         },
       },
       dependencies = { "folke/snacks.nvim" },
