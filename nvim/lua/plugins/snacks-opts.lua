@@ -59,6 +59,71 @@ return {
   },
   picker = {
     enabled = true,
+    actions = {
+      bufdelete_stable = function(picker)
+        if #picker.list.items <= 1 then
+          Snacks.notify.warn("Cannot delete the last buffer", { title = "Snacks Picker" })
+          return
+        end
+
+        picker.preview:reset()
+
+        local non_buf = false
+        local selected = picker:selected({ fallback = true })
+
+        for _, item in ipairs(selected) do
+          if item.buf then
+            Snacks.bufdelete.delete(item.buf)
+
+            -- Remove the deleted buffer from list.items
+            local new_items = {}
+            for _, li in ipairs(picker.list.items) do
+              if li.buf ~= item.buf then
+                new_items[#new_items + 1] = li
+              end
+            end
+            picker.list.items = new_items
+
+            -- Rebuild topk only if it was non-empty.
+            -- When empty, the matcher used the fast path and list:get falls back
+            -- to items[i] directly. Populating topk would switch rendering to
+            -- topk order (sorted by picker.sort), reordering the list.
+            if picker.list.topk:get(1) ~= nil then
+              picker.list.topk:clear()
+              for _, li in ipairs(picker.list.items) do
+                picker.list.topk:add(li)
+              end
+            end
+
+            -- Sync finder.items so that picker:count() stays accurate
+            local new_finder = {}
+            for _, fi in ipairs(picker.finder.items) do
+              if fi.buf ~= item.buf then
+                new_finder[#new_finder + 1] = fi
+              end
+            end
+            picker.finder.items = new_finder
+          else
+            non_buf = true
+          end
+        end
+
+        if non_buf then
+          Snacks.notify.warn("Only open buffers can be deleted", { title = "Snacks Picker" })
+        end
+
+        -- Clamp cursor if it went past the end of the list
+        local total = #picker.list.items
+        if picker.list.cursor > total then
+          picker.list.cursor = math.max(1, total)
+        end
+
+        -- Clear selection and re-render
+        picker.list:set_selected()
+        picker.list.dirty = true
+        picker.list:update()
+      end,
+    },
     win = {
       list = {
         keys = {
@@ -79,7 +144,6 @@ return {
       },
       input = {
         keys = {
-          ["/"] = { "toggle_focus", mode = { "n", "i" } },
           ["<c-c>"] = { "close", mode = { "n", "i" } },
           ["<a-d>"] = false,
           ["<a-f>"] = false,
@@ -105,18 +169,26 @@ return {
         win = {
           list = {
             keys = {
-              ["d"] = { "bufdelete", nowait = true },
+              ["d"] = { "bufdelete_stable" },
               ["dd"] = false,
-              ["<c-d>"] = { "bufdelete" },
+              ["<c-d>"] = { "bufdelete_stable" },
             },
           },
           input = {
             keys = {
-              ["<c-d>"] = { "bufdelete", mode = { "n", "i" } },
+              ["<c-d>"] = { "bufdelete_stable", mode = { "n", "i" } },
             },
           },
         },
         focus = "list",
+        on_show = function(picker)
+          local prev_win = vim.fn.win_getid(vim.fn.winnr('#'))
+          local buf = vim.api.nvim_win_get_buf(prev_win)
+          local pos = vim.api.nvim_win_get_cursor(prev_win)
+
+          vim.api.nvim_buf_set_mark(buf, '"', pos[1], pos[2], {})
+          picker:refresh()
+        end,
         sort_lastused = true,
       },
       explorer = {

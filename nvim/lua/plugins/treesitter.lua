@@ -1,11 +1,11 @@
 vim.opt.foldenable = true
 vim.opt.foldmethod = "expr"
-vim.opt.foldlevelstart = 10
+vim.opt.foldlevelstart = 99
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = {
     'c', 'cpp', 'bash', 'diff',
-    'lua', 'luadoc', 'vim', 'vimdoc',
+    'lua', 'vim', 'vimdoc',
     'html', 'css', 'json', 'yaml',
     'markdown', 'markdown_inline',
     'javascript', 'javascriptreact',

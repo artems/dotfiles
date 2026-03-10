@@ -67,6 +67,7 @@ vim.opt.foldtext = ""                           -- Display folded line with synt
 
 -- Colors
 vim.opt.background = "dark"                     -- Set background to dark
+vim.opt.termguicolors = true
 vim.cmd("colorscheme retrobox")                 -- Apply the retrobox colorscheme
 
 -- Windows
@@ -145,28 +146,6 @@ vim.keymap.set("v", "<", "<gv", { noremap = true })
 vim.keymap.set("v", ">", ">gv", { noremap = true })
 
 -- ===========================================================================
--- Options for 'bufexplorer' -------------------------------------------------
-vim.g.bufExplorerSortBy = "mru"                   -- Sort buffers by most recently used (MRU)
-vim.g.bufExplorerFindActive = false               -- Allow duplicate buffer in split windows
-vim.g.bufExplorerShowTabBuffer = false            -- Show buffers from other tabs
-vim.g.bufExplorerShowDirectories = false          -- Do not show directories
-vim.g.bufExplorerShowRelativePath = true          -- Show relative paths
-vim.g.bufExplorerSplitOutPathName = false         -- Do not split the filename and path
-vim.g.bufExplorerDisableDefaultKeyMapping = true  -- Disable default key mappings
-
--- Setup additional keymaps for bufexplorer filetype
-vim.api.nvim_create_augroup("vimrc_bufexplorer_setup", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-  desc = "Additional keymaps for bufexplorer",
-  group = "vimrc_bufexplorer_setup",
-  pattern = "bufexplorer",
-  callback = function()
-    vim.api.nvim_buf_set_keymap(0, "n", "?", "<F1>", { silent = true })
-    vim.api.nvim_buf_set_keymap(0, "n", "<Space>", "o", { silent = true })
-  end,
-})
-
--- ===========================================================================
 -- ! Misc
 if vim.fn.executable("rg") == 1 then
   vim.opt.grepprg = "rg --vimgrep"
@@ -176,7 +155,6 @@ elseif vim.fn.executable("grep") == 1 then
   vim.opt.grepprg = "grep -n"
 end
 
--- Highlight yanked text briefly for visual feedback
 vim.api.nvim_create_augroup("vimrc_highlight_on_yank", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking (copying) text",
@@ -186,10 +164,10 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- Automatically rotate colorschemes on a weekly basis
-vim.api.nvim_create_augroup("vimrc_daily_colorscheme", { clear = true })
+vim.api.nvim_create_augroup("vimrc_weekly_colorscheme", { clear = true })
 vim.api.nvim_create_autocmd("VimEnter", {
-  group = "vimrc_daily_colorscheme",
+  desc = "Automatically change color scheme every week",
+  group = "vimrc_weekly_colorscheme",
   callback = function()
     vim.schedule(function()
       local allowed_colorschemes = {
@@ -200,8 +178,8 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
       local timestamp = os.time() + 259200 -- shift to monday
       local num_of_week = math.floor(timestamp / 604800)
-      local colorscheme_index = num_of_week % #allowed_colorschemes + 1
-      local selected_scheme = allowed_colorschemes[colorscheme_index]
+      local colorscheme_index = num_of_week % #allowed_colorschemes
+      local selected_scheme = allowed_colorschemes[colorscheme_index + 1]
 
       vim.cmd("colorscheme " .. selected_scheme)
     end)
@@ -259,6 +237,7 @@ require("lazy").setup({
         }
       },
     },
+
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
@@ -271,14 +250,8 @@ require("lazy").setup({
       branch = "main",
       config = function() require("plugins.treesitter") end,
     },
+
     -- * Navigation
-    {
-      "jlanzarotta/bufexplorer",
-      cmd = { "BufExplorer" },
-      keys = {
-        { "<Space>", ":BufExplorer<CR>", desc = "Open buffer list" },
-      },
-    },
     {
       "folke/snacks.nvim",
       priority = 1000,
@@ -293,11 +266,13 @@ require("lazy").setup({
         { "<C-n>", function() require('snacks').picker.recent() end, desc = "Recent" },
         { "<C-h>", function() require('snacks').picker.grep() end, desc = "Grep" },
         { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
+        { "<Space>", function() require('snacks').picker.buffers() end, desc = "Open buffer list" },
       },
       dependencies = {
         "nvim-tree/nvim-web-devicons",
       },
     },
+
     -- * Editing enhancements
     {
       "AndrewRadev/splitjoin.vim",
@@ -320,6 +295,7 @@ require("lazy").setup({
       config = function() require("plugins.blinkcmp") end,
       event = "VeryLazy",
     },
+
     -- * Editing UI/UX
     {
       "j-hui/fidget.nvim",
@@ -365,19 +341,26 @@ require("lazy").setup({
     {
       "catgoose/nvim-colorizer.lua",
       opts = {
-        filetypes = { "css", "html" },
-        user_default_options = {
-          css = true,
-          names = false,
-          virtualtext_inline = true,
+        options = {
+          parsers = {
+            css = true,
+            names = { enable = false },
+          },
+          display = {
+            mode = "virtualtext",
+          },
         },
+        filetypes = { "css", "html" },
+        user_commands = false,
       },
     },
+
     -- * VCS
     {
       "lewis6991/gitsigns.nvim",
       config = function() require("plugins.gitsigns") end,
     },
+
     -- * AI
     {
       "coder/claudecode.nvim",
@@ -386,9 +369,9 @@ require("lazy").setup({
         "ClaudeCodeFocus",
         "ClaudeCodeSelectModel",
       },
-      keys = {
-        { "<C-,>", ":ClaudeCodeFocus<CR>", desc = "Focus Claude" },
-      },
+      init = function()
+        vim.api.nvim_create_user_command('CC', 'ClaudeCodeFocus', {})
+      end,
       opts = {
         diff_opts = {
           open_in_new_tab = true,
@@ -398,11 +381,10 @@ require("lazy").setup({
           snacks_win_opts = {
             keys = {
               term_normal = false,
-              claude_hide = { "<C-,>", function(self) self:hide() end, mode = "t", desc = "Hide Calude" },
             },
-            width = 0.5,
+            width = 0.35,
           },
-          split_width_percentage = 0.5,
+          split_width_percentage = 0.35,
         },
       },
       dependencies = { "folke/snacks.nvim" },

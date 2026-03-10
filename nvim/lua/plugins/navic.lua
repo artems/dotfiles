@@ -6,7 +6,7 @@ local separator = "  "
 -- Функция для расчета видимой длины строки (без учета highlight-кодов)
 local function calculate_display_width(str)
   -- Убираем highlight-коды: %#HighlightGroup#, %*, %{...%}
-  local visible = str:gsub('%%#[^#]+#', '')  -- %#HighlightGroup#
+  local visible = str:gsub('%%#[^#]+#', '')   -- %#HighlightGroup#
   visible = visible:gsub('%%%-?%d*%*', '')    -- %* или %-*
   visible = visible:gsub('%%{[^}]*%%}', '')   -- %{...%}
   return vim.fn.strdisplaywidth(visible)
