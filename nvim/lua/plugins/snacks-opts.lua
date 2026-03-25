@@ -181,6 +181,7 @@ return {
           },
         },
         focus = "list",
+        layout = { preview = false },
         on_show = function(picker)
           local prev_win = vim.fn.win_getid(vim.fn.winnr('#'))
           local buf = vim.api.nvim_win_get_buf(prev_win)

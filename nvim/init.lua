@@ -67,7 +67,7 @@ vim.opt.foldtext = ""                           -- Display folded line with synt
 
 -- Colors
 vim.opt.background = "dark"                     -- Set background to dark
-vim.opt.termguicolors = true
+vim.opt.termguicolors = true                    -- Enables 24-bit RGB color
 vim.cmd("colorscheme retrobox")                 -- Apply the retrobox colorscheme
 
 -- Windows
@@ -172,7 +172,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
     vim.schedule(function()
       local allowed_colorschemes = {
         "kanagawa",
-        "catppuccin",
+        "catppuccin-nvim",
         "tokyonight",
       }
 
@@ -241,7 +241,7 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      version = "v2.5.x",
+      version = "v2.7.x",
       config = function() require("plugins.lspconfig") end,
     },
     {
@@ -283,7 +283,7 @@ require("lazy").setup({
     },
     {
       "kylechui/nvim-surround",
-      version = "^3.0.0",
+      version = "^4.0.0",
       event = "VeryLazy",
       opts = {
         move_cursor = "sticky"

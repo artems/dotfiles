@@ -1,0 +1,110 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "claude": {
+      "name": "ElizaClaude",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/anthropic/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        },
+        "claude-sonnet-4-6": {
+          "name": "claude-sonnet-4-6"
+        },
+        "claude-haiku-4-5": {
+          "name": "claude-haiku-4-5"
+        }
+      }
+    },
+    "openrouter": {
+      "name": "ElizaOpenrouter",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/openrouter/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      }
+    },
+    "internal-deepseek-v3-1": {
+      "name": "ElizaDeepseek-v3-1-Internal",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/deepseek-v3-1-terminus/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "deepseek-v3-1-terminus": {
+          "name": "deepseek-v3-1-terminus"
+        }
+      }
+    },
+    "internal-deepseek-v3-2": {
+      "name": "ElizaDeepseek-v3-2-Internal",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/deepseek-v3-2/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "deepseek-v3-2": {
+          "name": "deepseek-v3-2"
+        }
+      }
+    },
+    "internal-glm": {
+      "name": "ElizaGLM-Internal",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/glm-4-7/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "glm-4-7": {
+          "name": "glm-4-7"
+        }
+      }
+    },
+    "internal-kimi": {
+      "name": "ElizaKimi-Internal",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/kimi-k2-5/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "kimi-k2-5": {
+          "name": "kimi-k2-5"
+        }
+      }
+    },
+    "internal-mini-max": {
+      "name": "ElizaMiniMax-Internal",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/mini-max-m2-5/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "mini-max-m2-5": {
+          "name": "mini-max-m2-5"
+        }
+      }
+    },
+    "internal-qwen-coder": {
+      "name": "ElizaQwenCoder-Internal",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/qwen3-coder-480b-a35b-runtime/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "qwen3-coder-480b-a35b-runtime": {
+          "name": "qwen3-coder-480b-a35b-runtime"
+        }
+      }
+    }
+  }
+}
