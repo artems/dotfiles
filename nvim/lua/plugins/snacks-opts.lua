@@ -211,6 +211,16 @@ return {
         ignored = true,
         auto_close = true
       },
+      git_status = {
+        focus = "list",
+        win = {
+          list = {
+            keys = {
+              ["<Tab>"] = { "git_stage" },
+            },
+          },
+        },
+      },
     },
     formatters = {
       file = {

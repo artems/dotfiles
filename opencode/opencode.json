@@ -20,6 +20,25 @@
         }
       }
     },
+    "openai": {
+      "name": "ElizaOpenAI",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://api.eliza.yandex.net/raw/openai/v1",
+        "apiKey": "{env:SOY_TOKEN}"
+      },
+      "models": {
+        "gpt-5.5": {
+          "name": "gpt-5.5"
+        },
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        },
+        "gpt-5.3-codex": {
+          "name": "gpt-5.3-codex"
+        }
+      }
+    },
     "openrouter": {
       "name": "ElizaOpenrouter",
       "npm": "@ai-sdk/openai-compatible",
@@ -28,29 +47,16 @@
         "apiKey": "{env:SOY_TOKEN}"
       }
     },
-    "internal-deepseek-v3-1": {
-      "name": "ElizaDeepseek-v3-1-Internal",
+    "internal-deepseek": {
+      "name": "ElizaDeepseek-Internal",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/deepseek-v3-1-terminus/v1",
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/deepseek-latest/v1",
         "apiKey": "{env:SOY_TOKEN}"
       },
       "models": {
-        "deepseek-v3-1-terminus": {
-          "name": "deepseek-v3-1-terminus"
-        }
-      }
-    },
-    "internal-deepseek-v3-2": {
-      "name": "ElizaDeepseek-v3-2-Internal",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/deepseek-v3-2/v1",
-        "apiKey": "{env:SOY_TOKEN}"
-      },
-      "models": {
-        "deepseek-v3-2": {
-          "name": "deepseek-v3-2"
+        "deepseek-latest": {
+          "name": "deepseek-latest"
         }
       }
     },
@@ -58,25 +64,12 @@
       "name": "ElizaGLM-Internal",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/glm-4-7/v1",
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/glm-latest/v1",
         "apiKey": "{env:SOY_TOKEN}"
       },
       "models": {
-        "glm-4-7": {
-          "name": "glm-4-7"
-        }
-      }
-    },
-    "internal-kimi": {
-      "name": "ElizaKimi-Internal",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/kimi-k2-5/v1",
-        "apiKey": "{env:SOY_TOKEN}"
-      },
-      "models": {
-        "kimi-k2-5": {
-          "name": "kimi-k2-5"
+        "glm-latest": {
+          "name": "glm-latest"
         }
       }
     },
@@ -84,25 +77,25 @@
       "name": "ElizaMiniMax-Internal",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/mini-max-m2-5/v1",
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/minimax-latest/v1",
         "apiKey": "{env:SOY_TOKEN}"
       },
       "models": {
-        "mini-max-m2-5": {
-          "name": "mini-max-m2-5"
+        "minimax-latest": {
+          "name": "minimax-latest"
         }
       }
     },
-    "internal-qwen-coder": {
-      "name": "ElizaQwenCoder-Internal",
+    "internal-qwen3": {
+      "name": "ElizaQwen-Internal",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/qwen3-coder-480b-a35b-runtime/v1",
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/qwen3-5-397b-a17b-fp8/v1",
         "apiKey": "{env:SOY_TOKEN}"
       },
       "models": {
-        "qwen3-coder-480b-a35b-runtime": {
-          "name": "qwen3-coder-480b-a35b-runtime"
+        "qwen3-5": {
+          "name": "qwen3-5"
         }
       }
     }

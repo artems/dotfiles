@@ -241,7 +241,7 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      version = "v2.7.x",
+      version = "v2.10.x",
       config = function() require("plugins.lspconfig") end,
     },
     {
@@ -267,6 +267,8 @@ require("lazy").setup({
         { "<C-h>", function() require('snacks').picker.grep() end, desc = "Grep" },
         { "<C-->", function() require('snacks').terminal() end, desc = "Toggle Terminal", mode = { "n", "t" } },
         { "<Space>", function() require('snacks').picker.buffers() end, desc = "Open buffer list" },
+        { "<leader>r", function() require('snacks').picker.resume() end, desc = "Resume", mode = { "n", "t" } },
+        { "<leader>s", function() require('snacks').picker.git_status() end, desc = "Git Status", mode = { "n", "t" } },
       },
       dependencies = {
         "nvim-tree/nvim-web-devicons",
@@ -370,21 +372,31 @@ require("lazy").setup({
         "ClaudeCodeSelectModel",
       },
       init = function()
-        vim.api.nvim_create_user_command('CC', 'ClaudeCodeFocus', {})
+        vim.api.nvim_create_user_command('CC', 'ClaudeCode', {})
       end,
+      keys = {
+        { "<C-,>", ":ClaudeCodeFocus<CR>", desc = "Focus Claude Code" },
+        { "<leader>aa", "<CMD>ClaudeCodeDiffAccept<CR>", desc = "Accept Claude Code diff" },
+        { "<leader>ad", "<CMD>ClaudeCodeDiffDeny<CR>", desc = "Deny Claude Code diff" },
+      },
       opts = {
         diff_opts = {
+          layout = "horizontal",
           open_in_new_tab = true,
-          hide_terminal_in_new_tab = true,
+          hide_terminal_in_new_tab = false,
         },
         terminal = {
           snacks_win_opts = {
             keys = {
-              term_normal = false,
+              claude_hide = {
+                "<C-,>",
+                function(self) self:hide() end,
+                mode = "t",
+                desc = "Hide Calude Code",
+              },
             },
-            width = 0.35,
           },
-          split_width_percentage = 0.35,
+          split_width_percentage = 0.5,
         },
       },
       dependencies = { "folke/snacks.nvim" },
