@@ -9,11 +9,11 @@
         "apiKey": "{env:SOY_TOKEN}"
       },
       "models": {
-        "claude-opus-4-6": {
-          "name": "claude-opus-4-6"
+        "claude-opus-5": {
+          "name": "claude-opus-5"
         },
-        "claude-sonnet-4-6": {
-          "name": "claude-sonnet-4-6"
+        "claude-sonnet-5": {
+          "name": "claude-sonnet-5"
         },
         "claude-haiku-4-5": {
           "name": "claude-haiku-4-5"
@@ -28,6 +28,15 @@
         "apiKey": "{env:SOY_TOKEN}"
       },
       "models": {
+        "gpt-5.6-sol": {
+          "name": "gpt-5.6-sol"
+        },
+        "gpt-5.6-terra": {
+          "name": "gpt-5.6-terra"
+        },
+        "gpt-5.6-luna": {
+          "name": "gpt-5.6-luna"
+        },
         "gpt-5.5": {
           "name": "gpt-5.5"
         },
@@ -47,19 +56,6 @@
         "apiKey": "{env:SOY_TOKEN}"
       }
     },
-    "internal-deepseek": {
-      "name": "ElizaDeepseek-Internal",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/deepseek-latest/v1",
-        "apiKey": "{env:SOY_TOKEN}"
-      },
-      "models": {
-        "deepseek-latest": {
-          "name": "deepseek-latest"
-        }
-      }
-    },
     "internal-glm": {
       "name": "ElizaGLM-Internal",
       "npm": "@ai-sdk/openai-compatible",
@@ -73,7 +69,7 @@
         }
       }
     },
-    "internal-mini-max": {
+    "internal-minimax": {
       "name": "ElizaMiniMax-Internal",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
@@ -86,16 +82,16 @@
         }
       }
     },
-    "internal-qwen3": {
-      "name": "ElizaQwen-Internal",
+    "internal-deepseek": {
+      "name": "ElizaDeepseek-Internal",
       "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "baseURL": "https://api.eliza.yandex.net/raw/internal/qwen3-5-397b-a17b-fp8/v1",
+        "baseURL": "https://api.eliza.yandex.net/raw/internal/deepseek-latest/v1",
         "apiKey": "{env:SOY_TOKEN}"
       },
       "models": {
-        "qwen3-5": {
-          "name": "qwen3-5"
+        "deepseek-latest": {
+          "name": "deepseek-latest"
         }
       }
     }

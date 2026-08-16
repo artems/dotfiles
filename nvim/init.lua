@@ -1,6 +1,6 @@
 -- ===========================================================================
 -- ! General preferences -----------------------------------------------------
-vim.opt.mouse = ""                              -- Disable mouse support in all modes
+vim.opt.mouse = "a"                             -- Enable mouse support in all modes
 vim.opt.encoding = "utf-8"                      -- Set character encoding used inside Neovim
 
 -- ! Edit options ------------------------------------------------------------
@@ -18,7 +18,7 @@ vim.opt.showbreak = "↪ "                        -- Show "↪ " at the beginnin
 vim.opt.breakindent = true                      -- Preserve indentation in wrapped lines
 
 -- Formatting
-vim.opt.textwidth = 78                          -- Maximum width of text when formatting
+vim.opt.textwidth = 80                          -- Maximum width of text when formatting
 
 local formatoptions = ""                        -- Automatic formatting settings:
 formatoptions = formatoptions .. "j"            --   Remove a comment leader when joining lines
@@ -249,6 +249,11 @@ require("lazy").setup({
       build = ":TSUpdate",
       branch = "main",
       config = function() require("plugins.treesitter") end,
+    },
+    {
+      "stevearc/conform.nvim",
+      ft = { "markdown" },
+      config = function() require("plugins.conform") end,
     },
 
     -- * Navigation
