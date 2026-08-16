@@ -213,6 +213,11 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
+-- ! Arc backend for gitsigns ------------------------------------------------
+-- Must run before lazy.setup: lazy sources gitsigns.nvim/plugin/gitsigns.lua,
+-- which calls require("gitsigns").setup(), before it runs the spec's config.
+require("arcsigns").setup()
+
 -- ! Setup lazy.nvim ---------------------------------------------------------
 require("lazy").setup({
   spec = {

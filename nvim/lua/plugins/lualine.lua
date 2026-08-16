@@ -25,6 +25,26 @@ local function encoding_not_utf_8()
   return format ~= "unix" or (encoding ~= "utf-8" and encoding ~= "")
 end
 
+-- Branch and diff come from gitsigns rather than lualine's own git support,
+-- which only knows how to find a .git directory. With arcsigns in place
+-- gitsigns fills these in for arc working copies too.
+local function vcs_branch()
+  return vim.b.gitsigns_head or vim.g.gitsigns_head or ""
+end
+
+local function vcs_diff()
+  local status = vim.b.gitsigns_status_dict
+  if not status then
+    return nil
+  end
+
+  return {
+    added = status.added,
+    modified = status.changed,
+    removed = status.removed,
+  }
+end
+
 local function tab_format(name, context)
   local extension = vim.fn.fnamemodify(name, ":e")
   local icon = devicons.get_icon(name, extension, { default = true })
@@ -56,7 +76,10 @@ require("lualine").setup({
   },
   sections = {
     lualine_a = { "mode" },
-    lualine_b = { "branch", "diff" },
+    lualine_b = {
+      { vcs_branch, icon = "" },
+      { "diff", source = vcs_diff },
+    },
     lualine_c = {
       {
         "filename",
