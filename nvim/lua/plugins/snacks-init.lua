@@ -1,5 +1,14 @@
 local snacks = require('snacks')
 
+-- Teach snacks about arc working copies (explorer status, git pickers).
+-- Must run after snacks is loaded, since it patches the loaded modules.
+local ok, err = pcall(function()
+  require('arcsnacks').setup()
+end)
+if not ok then
+  vim.notify('arcsnacks: ' .. tostring(err), vim.log.levels.WARN)
+end
+
 vim.api.nvim_create_autocmd("User", {
   pattern = "VeryLazy",
   callback = function()
