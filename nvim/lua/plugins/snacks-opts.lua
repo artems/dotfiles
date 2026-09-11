@@ -213,6 +213,21 @@ return {
       },
       git_status = {
         focus = "list",
+        on_show = function(picker)
+          local current = vim.api.nvim_buf_get_name(picker.input.filter.current_buf)
+          if current == "" then
+            return
+          end
+
+          current = vim.fs.normalize(current)
+          for item, index in picker:iter() do
+            if Snacks.picker.util.path(item) == current then
+              picker.list:view(index)
+              Snacks.picker.actions.list_scroll_center(picker)
+              break
+            end
+          end
+        end,
         win = {
           list = {
             keys = {
@@ -233,7 +248,7 @@ return {
     enabled = true,
     animate = {
       easing = "outSine",
-      duration = { total = 200 },
+      duration = { total = 250 },
     },
   },
   statuscolumn = { enabled = true },

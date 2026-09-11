@@ -246,7 +246,7 @@ require("lazy").setup({
     -- * Languages tools
     {
       "neovim/nvim-lspconfig",
-      version = "v2.10.x",
+      version = "v2.11.x",
       config = function() require("plugins.lspconfig") end,
     },
     {
@@ -272,6 +272,8 @@ require("lazy").setup({
         { "-", function() require('snacks').explorer() end, desc = "File Explorer" },
         { "]]", function() require('snacks').words.jump(vim.v.count1) end, desc = "Next Reference" },
         { "[[", function() require('snacks').words.jump(-vim.v.count1) end, desc = "Prev Reference" },
+        { "]g", function() require('gitnav').next(vim.v.count1) end, desc = "Next changed file" },
+        { "[g", function() require('gitnav').prev(vim.v.count1) end, desc = "Previous changed file" },
         { "<C-p>", function() require('snacks').picker.files() end, desc = "Find Files" },
         { "<C-n>", function() require('snacks').picker.recent() end, desc = "Recent" },
         { "<C-h>", function() require('snacks').picker.grep() end, desc = "Grep" },
@@ -372,44 +374,5 @@ require("lazy").setup({
       "lewis6991/gitsigns.nvim",
       config = function() require("plugins.gitsigns") end,
     },
-
-    -- * AI
-    {
-      "coder/claudecode.nvim",
-      cmd = {
-        "ClaudeCode",
-        "ClaudeCodeFocus",
-        "ClaudeCodeSelectModel",
-      },
-      init = function()
-        vim.api.nvim_create_user_command('CC', 'ClaudeCode', {})
-      end,
-      keys = {
-        { "<C-,>", ":ClaudeCodeFocus<CR>", desc = "Focus Claude Code" },
-        { "<leader>aa", "<CMD>ClaudeCodeDiffAccept<CR>", desc = "Accept Claude Code diff" },
-        { "<leader>ad", "<CMD>ClaudeCodeDiffDeny<CR>", desc = "Deny Claude Code diff" },
-      },
-      opts = {
-        diff_opts = {
-          layout = "horizontal",
-          open_in_new_tab = true,
-          hide_terminal_in_new_tab = false,
-        },
-        terminal = {
-          snacks_win_opts = {
-            keys = {
-              claude_hide = {
-                "<C-,>",
-                function(self) self:hide() end,
-                mode = "t",
-                desc = "Hide Calude Code",
-              },
-            },
-          },
-          split_width_percentage = 0.5,
-        },
-      },
-      dependencies = { "folke/snacks.nvim" },
-    }
   },
 })
