@@ -181,7 +181,7 @@ function M.new(file, revision, encoding, gitdir, toplevel)
   end
 
   if info.relpath then
-    file = util.Path.join(repo.toplevel, info.relpath)
+    file = vim.fs.joinpath(repo.toplevel, info.relpath)
   end
 
   local self = setmetatable({}, Obj)

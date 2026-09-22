@@ -150,19 +150,19 @@ function Watcher:_targets()
     if self.head_ref then
       local dir = vim.fs.dirname(self.head_ref)
       if dir and dir ~= '.' then
-        targets[#targets + 1] = Path.join(self.base, dir)
+        targets[#targets + 1] = vim.fs.joinpath(self.base, dir)
       end
     end
     return targets
   end
 
   local targets = {
-    Path.join(self.base, 'HEAD'),
-    Path.join(self.base, 'TREE'),
-    Path.join(self.base, 'stage'),
+    vim.fs.joinpath(self.base, 'HEAD'),
+    vim.fs.joinpath(self.base, 'TREE'),
+    vim.fs.joinpath(self.base, 'stage'),
   }
   if self.head_ref then
-    targets[#targets + 1] = Path.join(self.base, self.head_ref)
+    targets[#targets + 1] = vim.fs.joinpath(self.base, self.head_ref)
   end
   return targets
 end
